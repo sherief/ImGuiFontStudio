@@ -163,7 +163,7 @@ public:
 		SelectionContainerEnum vSelectionContainerEnum);
 	bool IsSelectionMode(GlyphSelectionModeFlags vGlyphSelectionModeFlags);
 	bool IsSelectionType(GlyphSelectionTypeFlags vGlyphSelectionTypeFlags);
-	void AnalyseSourceSelection(ProjectFile *vProjectFile);
+	void AnalyseSelection(ProjectFile *vProjectFile); // analyse and generate errors if found
 
 private:
 	void SelectAllGlyphs(ProjectFile *vProjectFile, FontInfos *vFontInfos,
@@ -244,6 +244,13 @@ private: // selection by range
 		ImFontGlyph vGlyph, 
 		bool vUpdateMaps,
 		SelectionContainerEnum vSelectionContainerEnum);
+
+private:
+	std::set<FontInfosCodePoint> GetGlyphs_CodepointInDouble_SelectedFont(ProjectFile *vProjectFile, FontInfos *vFontInfos);
+	std::set<FontInfosCodePoint> GetGlyphs_CodePointsInDouble_AllFonts(ProjectFile *vProjectFile);
+	std::set<FontInfosCodePoint> GetGlyphs_NamesInDouble_SelectedFont(ProjectFile *vProjectFile, FontInfos *vFontInfos);
+	std::set<FontInfosCodePoint> GetGlyphs_NamesInDouble_AllFonts(ProjectFile *vProjectFile);
+	void SelectGlyphsInDouble(ProjectFile *vProjectFile);
 
 public: // singleton
 	static SelectionHelper *Instance()

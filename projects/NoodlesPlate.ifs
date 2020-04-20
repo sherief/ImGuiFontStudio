@@ -85,20 +85,66 @@
 		</font>
 		<font name="materialdesignicons-webfont.ttf">
 			<glyphs>
+				<glyph orgId="61441" newId="61441" orgName="vector-square" newName="vector-square"/>
+				<glyph orgId="61464" newId="61464" orgName="orbit" newName="orbit"/>
+				<glyph orgId="61466" newId="61466" orgName="adjust" newName="adjust"/>
+				<glyph orgId="61484" newId="61484" orgName="alphabetical" newName="alphabetical"/>
+				<glyph orgId="61499" newId="61499" orgName="apps" newName="apps"/>
+				<glyph orgId="61501" newId="61501" orgName="arrange-bring-forward" newName="arrange-bring-forward"/>
+				<glyph orgId="61502" newId="61502" orgName="arrange-bring-to-front" newName="arrange-bring-to-front"/>
+				<glyph orgId="61503" newId="61503" orgName="arrange-send-backward" newName="arrange-send-backward"/>
+				<glyph orgId="61504" newId="61504" orgName="arrange-send-to-back" newName="arrange-send-to-back"/>
+				<glyph orgId="61505" newId="61505" orgName="arrow-all" newName="arrow-all"/>
+				<glyph orgId="61506" newId="61506" orgName="arrow-bottom-left" newName="arrow-bottom-left"/>
+				<glyph orgId="61507" newId="61507" orgName="arrow-bottom-right" newName="arrow-bottom-right"/>
+				<glyph orgId="61508" newId="61508" orgName="arrow-collapse-all" newName="arrow-collapse-all"/>
+				<glyph orgId="61509" newId="61509" orgName="arrow-down" newName="arrow-down"/>
+				<glyph orgId="61551" newId="61551" orgName="backup-restore" newName="backup-restore"/>
+				<glyph orgId="61559" newId="61559" orgName="basket-fill" newName="basket-fill"/>
+				<glyph orgId="61560" newId="61560" orgName="basket-unfill" newName="basket-unfill"/>
+				<glyph orgId="61641" newId="61641" orgName="border-color" newName="border-color"/>
+				<glyph orgId="61653" newId="61653" orgName="box-cutter" newName="box-cutter"/>
 				<glyph orgId="61692" newId="61692" orgName="camcorder" newName="camcorder"/>
 				<glyph orgId="61695" newId="61695" orgName="camcorder-off" newName="camcorder-off"/>
+				<glyph orgId="61705" newId="61705" orgName="camera-timer" newName="camera-timer"/>
 				<glyph orgId="61738" newId="61738" orgName="chart-line" newName="chart-line"/>
+				<glyph orgId="61740" newId="61740" orgName="check" newName="check"/>
+				<glyph orgId="61741" newId="61741" orgName="check-all" newName="check-all"/>
 				<glyph orgId="61746" newId="61746" orgName="checkbox-marked" newName="checkbox-marked"/>
 				<glyph orgId="61754" newId="61754" orgName="checkerboard" newName="checkerboard"/>
 				<glyph orgId="61783" newId="61783" orgName="close-box" newName="close-box"/>
 				<glyph orgId="61794" newId="61794" orgName="cloud-download" newName="import"/>
 				<glyph orgId="61799" newId="61799" orgName="cloud-upload" newName="upload"/>
+				<glyph orgId="61855" newId="61855" orgName="crop-free" newName="crop-free"/>
+				<glyph orgId="61858" newId="61858" orgName="crop-square" newName="crop-square"/>
+				<glyph orgId="61859" newId="61859" orgName="crosshairs" newName="crosshairs"/>
+				<glyph orgId="61860" newId="61860" orgName="crosshairs-gps" newName="crosshairs-gps"/>
+				<glyph orgId="61931" newId="61931" orgName="elevation-decline" newName="elevation-decline"/>
+				<glyph orgId="61932" newId="61932" orgName="elevation-rise" newName="elevation-rise"/>
+				<glyph orgId="61960" newId="61960" orgName="eye" newName="eye"/>
+				<glyph orgId="61961" newId="61961" orgName="eye-off" newName="eye-off"/>
 				<glyph orgId="61972" newId="61972" orgName="file" newName="file"/>
+				<glyph orgId="62000" newId="62000" orgName="filmstrip" newName="filmstrip"/>
+				<glyph orgId="62001" newId="62001" orgName="filmstrip-off" newName="filmstrip-off"/>
+				<glyph orgId="62002" newId="62002" orgName="filter" newName="filter"/>
+				<glyph orgId="62003" newId="62003" orgName="filter-outline" newName="filter-outline"/>
+				<glyph orgId="62004" newId="62004" orgName="filter-remove" newName="filter-remove"/>
+				<glyph orgId="62005" newId="62005" orgName="filter-remove-outline" newName="filter-remove-outline"/>
+				<glyph orgId="62023" newId="62023" orgName="flip-to-back" newName="flip-to-back"/>
+				<glyph orgId="62024" newId="62024" orgName="flip-to-front" newName="flip-to-front"/>
+				<glyph orgId="62025" newId="62025" orgName="floppy" newName="floppy"/>
 				<glyph orgId="62027" newId="62027" orgName="folder" newName="folder"/>
+				<glyph orgId="62031" newId="62031" orgName="folder-image" newName="folder-image"/>
 				<glyph orgId="62036" newId="62036" orgName="folder-multiple-image" newName="folder_open_picture"/>
 				<glyph orgId="62039" newId="62039" orgName="folder-plus" newName="folder_add"/>
+				<glyph orgId="62088" newId="62088" orgName="format-wrap-inline" newName="format-wrap-inline"/>
+				<glyph orgId="62089" newId="62089" orgName="format-wrap-square" newName="format-wrap-square"/>
+				<glyph orgId="62090" newId="62090" orgName="format-wrap-tight" newName="format-wrap-tight"/>
 				<glyph orgId="62132" newId="62132" orgName="google-controller" newName="google-controller"/>
 				<glyph orgId="62133" newId="62133" orgName="google-controller-off" newName="google-controller-off"/>
+				<glyph orgId="62185" newId="62185" orgName="image" newName="image"/>
+				<glyph orgId="62193" newId="62193" orgName="image-filter-center-focus" newName="image-filter-center-focus"/>
+				<glyph orgId="62194" newId="62194" orgName="image-filter-center-focus-weak" newName="image-filter-center-focus-weak"/>
 				<glyph orgId="62220" newId="62220" orgName="keyboard" newName="keyboard"/>
 				<glyph orgId="62224" newId="62224" orgName="keyboard-off" newName="keyboard-off"/>
 				<glyph orgId="62248" newId="62248" orgName="layers" newName="layers"/>
@@ -106,6 +152,8 @@
 				<glyph orgId="62253" newId="62253" orgName="led-outline" newName="led-outline"/>
 				<glyph orgId="62254" newId="62254" orgName="led-variant-off" newName="led-variant-off"/>
 				<glyph orgId="62264" newId="62264" orgName="link-off" newName="link-off"/>
+				<glyph orgId="62265" newId="62265" orgName="link-variant" newName="link-variant"/>
+				<glyph orgId="62266" newId="62266" orgName="link-variant-off" newName="link-variant-off"/>
 				<glyph orgId="62270" newId="62270" orgName="lock" newName="lock"/>
 				<glyph orgId="62271" newId="62271" orgName="lock-open" newName="lock-open"/>
 				<glyph orgId="62274" newId="62274" orgName="login" newName="login"/>
@@ -132,6 +180,12 @@
 				<glyph orgId="62447" newId="62447" orgName="pencil-off" newName="pencil-off"/>
 				<glyph orgId="62467" newId="62467" orgName="pin" newName="pin"/>
 				<glyph orgId="62468" newId="62468" orgName="pin-off" newName="pin-off"/>
+				<glyph orgId="62528" newId="62528" orgName="ray-end" newName="ray-end"/>
+				<glyph orgId="62529" newId="62529" orgName="ray-end-arrow" newName="ray-end-arrow"/>
+				<glyph orgId="62530" newId="62530" orgName="ray-start" newName="ray-start"/>
+				<glyph orgId="62531" newId="62531" orgName="ray-start-arrow" newName="ray-start-arrow"/>
+				<glyph orgId="62532" newId="62532" orgName="ray-start-end" newName="ray-start-end"/>
+				<glyph orgId="62533" newId="62533" orgName="ray-vertex" newName="ray-vertex"/>
 				<glyph orgId="62551" newId="62551" orgName="repeat-off" newName="repeat-off"/>
 				<glyph orgId="62552" newId="62552" orgName="repeat-once" newName="repeat-once"/>
 				<glyph orgId="62597" newId="62597" orgName="select" newName="select"/>
@@ -145,6 +199,8 @@
 				<glyph orgId="62615" newId="62615" orgName="share-variant" newName="share-variant"/>
 				<glyph orgId="62616" newId="62616" orgName="shield" newName="shield"/>
 				<glyph orgId="62617" newId="62617" orgName="shield-outline" newName="shield-outline"/>
+				<glyph orgId="62622" newId="62622" orgName="shuffle-disabled" newName="shuffle-disabled"/>
+				<glyph orgId="62623" newId="62623" orgName="shuffle-variant" newName="shuffle-variant"/>
 				<glyph orgId="62635" newId="62635" orgName="skip-backward" newName="skip-backward"/>
 				<glyph orgId="62636" newId="62636" orgName="skip-forward" newName="skip-forward"/>
 				<glyph orgId="62637" newId="62637" orgName="skip-next" newName="skip-next"/>
@@ -202,14 +258,39 @@
 				<glyph orgId="62887" newId="62887" orgName="white-balance-iridescent" newName="white-balance-iridescent"/>
 				<glyph orgId="62888" newId="62888" orgName="white-balance-sunny" newName="white-balance-sunny"/>
 				<glyph orgId="62945" newId="62945" orgName="check-circle-outline" newName="check-circle-outline"/>
+				<glyph orgId="62979" newId="62979" orgName="priority-high" newName="priority-high"/>
+				<glyph orgId="62980" newId="62980" orgName="priority-low" newName="priority-low"/>
+				<glyph orgId="63006" newId="63006" orgName="format-horizontal-align-center" newName="format-horizontal-align-center"/>
+				<glyph orgId="63007" newId="63007" orgName="format-horizontal-align-left" newName="format-horizontal-align-left"/>
+				<glyph orgId="63008" newId="63008" orgName="format-horizontal-align-right" newName="format-horizontal-align-right"/>
+				<glyph orgId="63009" newId="63009" orgName="format-vertical-align-bottom" newName="format-vertical-align-bottom"/>
+				<glyph orgId="63010" newId="63010" orgName="format-vertical-align-center" newName="format-vertical-align-center"/>
+				<glyph orgId="63011" newId="63011" orgName="format-vertical-align-top" newName="format-vertical-align-top"/>
+				<glyph orgId="63016" newId="63016" orgName="matrix" newName="matrix"/>
 				<glyph orgId="63020" newId="63020" orgName="source-branch" newName="source-branch"/>
 				<glyph orgId="63021" newId="63021" orgName="source-merge" newName="source-merge"/>
 				<glyph orgId="63022" newId="63022" orgName="tune" newName="tune"/>
 				<glyph orgId="63032" newId="63032" orgName="cards" newName="cards"/>
 				<glyph orgId="63033" newId="63033" orgName="cards-outline" newName="cards-outline"/>
 				<glyph orgId="63034" newId="63034" orgName="cards-playing-outline" newName="cards-playing-outline"/>
+				<glyph orgId="63069" newId="63069" orgName="shape-circle-plus" newName="shape-circle-plus"/>
+				<glyph orgId="63070" newId="63070" orgName="shape-polygon-plus" newName="shape-polygon-plus"/>
+				<glyph orgId="63072" newId="63072" orgName="shape-square-plus" newName="shape-square-plus"/>
 				<glyph orgId="63183" newId="63183" orgName="eye-outline" newName="eye-outline"/>
 				<glyph orgId="63184" newId="63184" orgName="eye-off-outline" newName="eye-off-outline"/>
+				<glyph orgId="63291" newId="63291" orgName="gesture-double-tap" newName="gesture-double-tap"/>
+				<glyph orgId="63292" newId="63292" orgName="gesture-swipe-down" newName="gesture-swipe-down"/>
+				<glyph orgId="63293" newId="63293" orgName="gesture-swipe-left" newName="gesture-swipe-left"/>
+				<glyph orgId="63294" newId="63294" orgName="gesture-swipe-right" newName="gesture-swipe-right"/>
+				<glyph orgId="63295" newId="63295" orgName="gesture-swipe-up" newName="gesture-swipe-up"/>
+				<glyph orgId="63296" newId="63296" orgName="gesture-tap" newName="gesture-tap"/>
+				<glyph orgId="63297" newId="63297" orgName="gesture-two-double-tap" newName="gesture-two-double-tap"/>
+				<glyph orgId="63298" newId="63298" orgName="gesture-two-tap" newName="gesture-two-tap"/>
+				<glyph orgId="63324" newId="63324" orgName="volume-plus" newName="volume-plus"/>
+				<glyph orgId="63325" newId="63325" orgName="volume-minus" newName="volume-minus"/>
+				<glyph orgId="63326" newId="63326" orgName="volume-mute" newName="volume-mute"/>
+				<glyph orgId="63438" newId="63438" orgName="high-definition" newName="high-definition"/>
+				<glyph orgId="63546" newId="63546" orgName="television-off" newName="television-off"/>
 				<glyph orgId="63580" newId="63580" orgName="clipboard-pulse" newName="clipboard-pulse"/>
 				<glyph orgId="63581" newId="63581" orgName="clipboard-pulse-outline" newName="clipboard-pulse-outline"/>
 				<glyph orgId="63594" newId="63594" orgName="eye-plus" newName="eye-plus"/>
@@ -219,6 +300,14 @@
 				<glyph orgId="63602" newId="63602" orgName="gauge-empty" newName="gauge-empty"/>
 				<glyph orgId="63603" newId="63603" orgName="gauge-full" newName="gauge-full"/>
 				<glyph orgId="63604" newId="63604" orgName="gauge-low" newName="gauge-low"/>
+				<glyph orgId="63712" newId="63712" orgName="gate-and" newName="gate-and"/>
+				<glyph orgId="63713" newId="63713" orgName="gate-nand" newName="gate-nand"/>
+				<glyph orgId="63714" newId="63714" orgName="gate-nor" newName="gate-nor"/>
+				<glyph orgId="63715" newId="63715" orgName="gate-not" newName="gate-not"/>
+				<glyph orgId="63716" newId="63716" orgName="gate-or" newName="gate-or"/>
+				<glyph orgId="63717" newId="63717" orgName="gate-xnor" newName="gate-xnor"/>
+				<glyph orgId="63718" newId="63718" orgName="gate-xor" newName="gate-xor"/>
+				<glyph orgId="63834" newId="63834" orgName="current-ac" newName="current-ac"/>
 				<glyph orgId="63836" newId="63836" orgName="database-import" newName="database-import"/>
 				<glyph orgId="63837" newId="63837" orgName="database-export" newName="database-export"/>
 				<glyph orgId="63847" newId="63847" orgName="folder-search" newName="folder-search"/>
@@ -259,13 +348,72 @@
 				<glyph orgId="64162" newId="64162" orgName="circle-slice-6" newName="circle-slice-6"/>
 				<glyph orgId="64163" newId="64163" orgName="circle-slice-7" newName="circle-slice-7"/>
 				<glyph orgId="64164" newId="64164" orgName="circle-slice-8" newName="circle-slice-8"/>
+				<glyph orgId="64220" newId="64220" orgName="shield-remove-outline" newName="shield-remove-outline"/>
+				<glyph orgId="64287" newId="64287" orgName="resistor" newName="resistor"/>
+				<glyph orgId="64400" newId="64400" orgName="pan" newName="pan"/>
+				<glyph orgId="64401" newId="64401" orgName="pan-bottom-left" newName="pan-bottom-left"/>
+				<glyph orgId="64402" newId="64402" orgName="pan-bottom-right" newName="pan-bottom-right"/>
+				<glyph orgId="64403" newId="64403" orgName="pan-down" newName="pan-down"/>
+				<glyph orgId="64404" newId="64404" orgName="pan-horizontal" newName="pan-horizontal"/>
+				<glyph orgId="64405" newId="64405" orgName="pan-left" newName="pan-left"/>
+				<glyph orgId="64406" newId="64406" orgName="pan-right" newName="pan-right"/>
+				<glyph orgId="64407" newId="64407" orgName="pan-top-left" newName="pan-top-left"/>
+				<glyph orgId="64408" newId="64408" orgName="pan-top-right" newName="pan-top-right"/>
+				<glyph orgId="64409" newId="64409" orgName="pan-up" newName="pan-up"/>
+				<glyph orgId="64410" newId="64410" orgName="pan-vertical" newName="pan-vertical"/>
+				<glyph orgId="64804" newId="64804" orgName="axis" newName="axis"/>
 				<glyph orgId="64805" newId="64805" orgName="axis-arrow" newName="axis-arrow"/>
 				<glyph orgId="64806" newId="64806" orgName="axis-arrow-lock" newName="axis-arrow-lock"/>
+				<glyph orgId="64807" newId="64807" orgName="axis-lock" newName="axis-lock"/>
+				<glyph orgId="64808" newId="64808" orgName="axis-x-arrow" newName="axis-x-arrow"/>
+				<glyph orgId="64809" newId="64809" orgName="axis-x-arrow-lock" newName="axis-x-arrow-lock"/>
+				<glyph orgId="64810" newId="64810" orgName="axis-x-rotate-clockwise" newName="axis-x-rotate-clockwise"/>
+				<glyph orgId="64811" newId="64811" orgName="axis-x-rotate-counterclockwise" newName="axis-x-rotate-counterclockwise"/>
+				<glyph orgId="64812" newId="64812" orgName="axis-x-y-arrow-lock" newName="axis-x-y-arrow-lock"/>
+				<glyph orgId="64813" newId="64813" orgName="axis-y-arrow" newName="axis-y-arrow"/>
+				<glyph orgId="64814" newId="64814" orgName="axis-y-arrow-lock" newName="axis-y-arrow-lock"/>
+				<glyph orgId="64815" newId="64815" orgName="axis-y-rotate-clockwise" newName="axis-y-rotate-clockwise"/>
+				<glyph orgId="64816" newId="64816" orgName="axis-y-rotate-counterclockwise" newName="axis-y-rotate-counterclockwise"/>
+				<glyph orgId="64817" newId="64817" orgName="axis-z-arrow" newName="axis-z-arrow"/>
+				<glyph orgId="64818" newId="64818" orgName="axis-z-arrow-lock" newName="axis-z-arrow-lock"/>
+				<glyph orgId="64819" newId="64819" orgName="axis-z-rotate-clockwise" newName="axis-z-rotate-clockwise"/>
+				<glyph orgId="64820" newId="64820" orgName="axis-z-rotate-counterclockwise" newName="axis-z-rotate-counterclockwise"/>
 				<glyph orgId="64846" newId="64846" orgName="flare" newName="flare"/>
 				<glyph orgId="64932" newId="64932" orgName="file-document-edit" newName="file-document-edit"/>
 				<glyph orgId="64933" newId="64933" orgName="file-document-edit-outline" newName="file-document-edit-outline"/>
+				<glyph orgId="65046" newId="65046" orgName="gamepad-circle" newName="gamepad-circle"/>
+				<glyph orgId="65047" newId="65047" orgName="gamepad-circle-down" newName="gamepad-circle-down"/>
+				<glyph orgId="65048" newId="65048" orgName="gamepad-circle-left" newName="gamepad-circle-left"/>
+				<glyph orgId="65049" newId="65049" orgName="gamepad-circle-outline" newName="gamepad-circle-outline"/>
+				<glyph orgId="65050" newId="65050" orgName="gamepad-circle-right" newName="gamepad-circle-right"/>
+				<glyph orgId="65051" newId="65051" orgName="gamepad-circle-up" newName="gamepad-circle-up"/>
+				<glyph orgId="65052" newId="65052" orgName="gamepad-down" newName="gamepad-down"/>
+				<glyph orgId="65053" newId="65053" orgName="gamepad-left" newName="gamepad-left"/>
+				<glyph orgId="65054" newId="65054" orgName="gamepad-right" newName="gamepad-right"/>
+				<glyph orgId="65055" newId="65055" orgName="gamepad-round" newName="gamepad-round"/>
 				<glyph orgId="65074" newId="65074" orgName="lightbulb-off" newName="lightbulb-off"/>
 				<glyph orgId="65075" newId="65075" orgName="lightbulb-off-outline" newName="lightbulb-off-outline"/>
+				<glyph orgId="65128" newId="65128" orgName="volume-variant-off" newName="volume-variant-off"/>
+				<glyph orgId="65129" newId="65129" orgName="wallpaper" newName="wallpaper"/>
+				<glyph orgId="65150" newId="65150" orgName="gamepad-round-down" newName="gamepad-round-down"/>
+				<glyph orgId="65151" newId="65151" orgName="gamepad-round-left" newName="gamepad-round-left"/>
+				<glyph orgId="65152" newId="65152" orgName="gamepad-round-outline" newName="gamepad-round-outline"/>
+				<glyph orgId="65153" newId="65153" orgName="gamepad-round-right" newName="gamepad-round-right"/>
+				<glyph orgId="65154" newId="65154" orgName="gamepad-round-up" newName="gamepad-round-up"/>
+				<glyph orgId="65155" newId="65155" orgName="gamepad-up" newName="gamepad-up"/>
+				<glyph orgId="65169" newId="65169" orgName="arrow-left-right-bold" newName="arrow-left-right-bold"/>
+				<glyph orgId="65170" newId="65170" orgName="arrow-top-left-bottom-right" newName="arrow-top-left-bottom-right"/>
+				<glyph orgId="65260" newId="65260" orgName="television-play" newName="television-play"/>
+				<glyph orgId="65299" newId="65299" orgName="fit-to-page-outline" newName="fit-to-page-outline"/>
+				<glyph orgId="65308" newId="65308" orgName="image-filter-center-focus-strong" newName="image-filter-center-focus-strong"/>
+				<glyph orgId="65309" newId="65309" orgName="image-filter-center-focus-strong-outline" newName="image-filter-center-focus-strong-outline"/>
+				<glyph orgId="65353" newId="65353" orgName="stretch-to-page-outline" newName="stretch-to-page-outline"/>
+				<glyph orgId="65387" newId="65387" orgName="focus-auto" newName="focus-auto"/>
+				<glyph orgId="65388" newId="65388" orgName="focus-field" newName="focus-field"/>
+				<glyph orgId="65389" newId="65389" orgName="focus-field-horizontal" newName="focus-field-horizontal"/>
+				<glyph orgId="65390" newId="65390" orgName="focus-field-vertical" newName="focus-field-vertical"/>
+				<glyph orgId="65446" newId="65446" orgName="television-pause" newName="television-pause"/>
+				<glyph orgId="65447" newId="65447" orgName="television-stop" newName="television-stop"/>
 			</glyphs>
 			<prefix></prefix>
 			<pathfilename>..\samples_Fonts\materialdesignicons-webfont.ttf</pathfilename>
@@ -273,7 +421,7 @@
 			<fontsize>29</fontsize>
 		</font>
 		<rangecoloring show="false" hash="10;15;35;0.5"/>
-		<previewcountglyph_x>20</previewcountglyph_x>
+		<previewcountglyph_x>22</previewcountglyph_x>
 		<mergedfontprefix>NDP</mergedfontprefix>
 		<curglyphtooltip>true</curglyphtooltip>
 		<srcglyphtooltip>true</srcglyphtooltip>
@@ -281,6 +429,6 @@
 		<glyphpreviewscale>0.333</glyphpreviewscale>
 		<glyphpreviewshowcontrollines>false</glyphpreviewshowcontrollines>
 		<genmode>357</genmode>
-		<fonttomergein>ndp.ttf</fonttomergein>
+		<fonttomergein>materialdesignicons-webfont.ttf</fonttomergein>
 	</project>
 </config>

@@ -102,14 +102,11 @@ int GeneratorPane::DrawGeneratorPane(ProjectFile *vProjectFile, int vWidgetId)
 
 int GeneratorPane::DrawFontsGenerator(ProjectFile *vProjectFile, int vWidgetId)
 {
-	if (ImGui::BeginFramedGroup("Font Generation"))
-	{
-		if (vProjectFile->m_CurrentFont)
-		{
-			bool btnClick = false;
-			std::string exts;
-
 #ifdef _DEBUG
+	if (vProjectFile->m_CurrentFont)
+	{
+		if (ImGui::BeginFramedGroup("Debug Only"))
+		{
 			if (ImGui::Button("Quick Font Current"))
 			{
 				vProjectFile->m_GenMode = (GenModeFlags)0;
@@ -130,7 +127,79 @@ int GeneratorPane::DrawFontsGenerator(ProjectFile *vProjectFile, int vWidgetId)
 				FileHelper::Instance()->CreateDirectoryIfNotExist(path);
 				Generator::Instance()->Generate(path, "test.ttf", vProjectFile);
 			}
+
+			ImGui::EndFramedGroup(true);
+		}
+	}
 #endif
+
+	if (Messaging::Instance()->IsThereSomeErrors())
+	{
+		if (ImGui::BeginFramedGroup("Problem solving"))
+		{
+			if (vProjectFile->m_NamesInDoubleFound || vProjectFile->m_CodePointInDoubleFound)
+			{
+				if (ImGui::Button("Correct Auto"))
+				{
+					FinalFontPane::Instance()->Correct_Auto_AllFonts(vProjectFile);
+				}
+			}
+			if (vProjectFile->m_CodePointInDoubleFound)
+			{
+				if (ImGui::Button("Correct CodePoints Auto"))
+				{
+					FinalFontPane::Instance()->Correct_Auto_AllFonts_CodePoints(vProjectFile);
+				}
+			}
+			if (vProjectFile->m_NamesInDoubleFound)
+			{
+				if (ImGui::Button("Correct Names Auto"))
+				{
+					FinalFontPane::Instance()->Correct_Auto_AllFonts_Names(vProjectFile);
+				}
+			}
+			
+			if (vProjectFile->m_CurrentFont)
+			{
+				if (vProjectFile->m_CurrentFont->m_NameInDoubleFound || vProjectFile->m_CurrentFont->m_CodePointInDoubleFound)
+				{
+					ImGui::Separator();
+					ImGui::Text("Current Font Only :");
+					
+					if (ImGui::Button("Correct Auto"))
+					{
+						FinalFontPane::Instance()->Correct_Auto_SelectedFont(vProjectFile, vProjectFile->m_CurrentFont);
+					}
+				}
+				if (vProjectFile->m_CurrentFont->m_CodePointInDoubleFound)
+				{
+					if (ImGui::Button("Correct CodePoints Auto"))
+					{
+						FinalFontPane::Instance()->Correct_Auto_SelectedFont_CodePoints(vProjectFile, vProjectFile->m_CurrentFont);
+					}
+				}
+				if (vProjectFile->m_CurrentFont->m_NameInDoubleFound)
+				{
+					if (ImGui::Button("Correct Names Auto"))
+					{
+						FinalFontPane::Instance()->Correct_Auto_SelectedFont_Names(vProjectFile, vProjectFile->m_CurrentFont);
+					}
+				}
+			}
+
+			ImGui::Text("You can also edit or select\nglyphs in errors (red square)\nand fix them yourself\nwith selection menu");
+
+			ImGui::EndFramedGroup(true);
+		}
+	}
+	
+	if (ImGui::BeginFramedGroup("Font Generation"))
+	{
+		if (vProjectFile->m_CurrentFont)
+		{
+			bool btnClick = false;
+			std::string exts;
+
 			bool change = false;
 			ImGui::Text("Modes : ");
 			ImGui::Indent();
@@ -267,7 +336,7 @@ int GeneratorPane::DrawFontsGenerator(ProjectFile *vProjectFile, int vWidgetId)
 #else
 				strncpy(extTypes, exts.c_str(), exts.size());
 #endif
-				ImGuiFileDialog::Instance()->OpenModal(
+				igfd::ImGuiFileDialog::Instance()->OpenModal(
 					"GenerateFileDlg",
 					"Location and name where create the file", extTypes, ".",
 					vProjectFile->m_CurrentFont->m_FontFileName,
@@ -389,7 +458,7 @@ bool GeneratorPane::CheckGeneratioConditions(ProjectFile *vProjectFile)
 }
 
 // file dialog pane
-void GeneratorPane::GeneratorFileDialogPane(std::string /*vFilter*/, UserDatas vUserDatas, 
+void GeneratorPane::GeneratorFileDialogPane(std::string /*vFilter*/, igfd::UserDatas vUserDatas, 
 	bool *vCantContinue) // if vCantContinue is false, the user cant validate the dialog
 {
 	cAssert(vCantContinue != 0, "ImGuiFileDialog Pane param vCantContinue is NULL");
@@ -488,16 +557,16 @@ void GeneratorPane::DrawDialosAndPopups(ProjectFile *vProjectFile)
 	ImVec2 min = MainFrame::Instance()->m_DisplaySize * 0.5f;
 	ImVec2 max = MainFrame::Instance()->m_DisplaySize;
 
-	if (ImGuiFileDialog::Instance()->FileDialog("GenerateFileDlg", ImGuiWindowFlags_NoDocking, min, max))
+	if (igfd::ImGuiFileDialog::Instance()->FileDialog("GenerateFileDlg", ImGuiWindowFlags_NoDocking, min, max))
 	{
-		if (ImGuiFileDialog::Instance()->IsOk)
+		if (igfd::ImGuiFileDialog::Instance()->IsOk)
 		{
-			std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-			std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+			std::string filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
+			std::string fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
 			Generator::Instance()->Generate(filePath, fileName, vProjectFile);
 		}
 
-		ImGuiFileDialog::Instance()->CloseDialog("GenerateFileDlg");
+		igfd::ImGuiFileDialog::Instance()->CloseDialog("GenerateFileDlg");
 	}
 }
 

@@ -72,7 +72,7 @@ bool SelectionHelper::IsGlyphSelected(
 	else if (vSelectionContainerEnum == SelectionContainerEnum::SELECTION_CONTAINER_FINAL)
 	{
 		res = (m_SelectionForOperation.find(FontInfosCodePoint(vCodePoint, vFontInfos)) !=
-			m_SelectionForOperation.end()); // trouv?
+			m_SelectionForOperation.end()); // trouve
 	}
 
 	return res;
@@ -156,6 +156,26 @@ bool SelectionHelper::IsSelectionMode(GlyphSelectionModeFlags vGlyphSelectionMod
 
 void SelectionHelper::DrawMenu(ProjectFile *vProjectFile)
 {
+	if (GuiLayout::Instance()->IsPaneActive(PaneFlags::PANE_FINAL))
+	{
+		if (Messaging::Instance()->IsThereSomeErrors())
+		{
+			if (ImGui::BeginFramedGroup("Correction"))
+			{
+				ImGui::Indent();
+				{
+					if (ImGui::Button("Select Glyphs In Double"))
+					{
+						SelectGlyphsInDouble(vProjectFile);
+					}
+				}
+				ImGui::Unindent();
+
+				ImGui::EndFramedGroup(true);
+			}
+		}
+	}
+
 	if (!m_SelectionForOperation.empty())
 	{
 		if (ImGui::BeginFramedGroup("Selection Operations"))
@@ -215,7 +235,7 @@ void SelectionHelper::DrawMenu(ProjectFile *vProjectFile)
 				if (m_ReRangeStruct.startCodePoint.codePoint + (int)m_SelectionForOperation.size() <=
 					m_ReRangeStruct.MaxCodePoint)
 				{
-					if (ImGui::Button("ReRange after start"))
+					if (ImGui::Button("ReRange Auto after start"))
 					{
 						ReRange_Offset_After_Start(vProjectFile, (ImWchar)m_ReRangeStruct.startCodePoint.codePoint);
 					}
@@ -224,7 +244,7 @@ void SelectionHelper::DrawMenu(ProjectFile *vProjectFile)
 				if (m_ReRangeStruct.endCodePoint.codePoint - (int)m_SelectionForOperation.size() >=
 					m_ReRangeStruct.MinCodePoint)
 				{
-					if (ImGui::Button("ReRange before end"))
+					if (ImGui::Button("ReRange Auto before end"))
 					{
 						ReRange_Offset_Before_End(vProjectFile, (ImWchar)m_ReRangeStruct.endCodePoint.codePoint);
 					}
@@ -1364,16 +1384,19 @@ void SelectionHelper::PrepareSelection(
 {
 	FinalFontPane::Instance()->PrepareSelection(vProjectFile);
 
-	AnalyseSourceSelection(vProjectFile);
+	AnalyseSelection(vProjectFile);
 }
 
-void SelectionHelper::AnalyseSourceSelection(ProjectFile *vProjectFile)
+// analyse and generate errors if found
+void SelectionHelper::AnalyseSelection(ProjectFile *vProjectFile)
 {
 	if (vProjectFile &&  vProjectFile->IsLoaded())
 	{
+		Messaging::Instance()->ClearErrors();
+
 		// search for codepoint and names in double => an generate an error
-		std::set<std::string> namesGlobal; bool nameGlobalInDoubleFound = false;
-		std::set<ImWchar> codePointsGlobal; bool codePointGlobalInDoubleFound = false;
+		std::set<std::string> namesGlobal; vProjectFile->m_NamesInDoubleFound = false;
+		std::set<ImWchar> codePointsGlobal; vProjectFile->m_CodePointInDoubleFound = false;
 		std::set<std::string> namesLocal; 
 		std::set<ImWchar> codePointsLocal; 
 		for (auto &font : vProjectFile->m_Fonts)
@@ -1414,7 +1437,7 @@ void SelectionHelper::AnalyseSourceSelection(ProjectFile *vProjectFile)
 				}
 
 				// global for all fonts
-				if (!codePointGlobalInDoubleFound)
+				if (!vProjectFile->m_CodePointInDoubleFound)
 				{
 					if (codePointsGlobal.find(selection.second.newCodePoint) == codePointsGlobal.end()) // not found 
 					{
@@ -1423,12 +1446,12 @@ void SelectionHelper::AnalyseSourceSelection(ProjectFile *vProjectFile)
 					else
 					{
 						// double detected => cast an error
-						codePointGlobalInDoubleFound = true;
+						vProjectFile->m_CodePointInDoubleFound = true;
 					}
 				}
 
 				// global for all fonts
-				if (!nameGlobalInDoubleFound)
+				if (!vProjectFile->m_NamesInDoubleFound)
 				{
 					if (namesGlobal.find(selection.second.newHeaderName) == namesGlobal.end()) // not found 
 					{
@@ -1437,19 +1460,19 @@ void SelectionHelper::AnalyseSourceSelection(ProjectFile *vProjectFile)
 					else
 					{
 						// double detected => cast an error
-						nameGlobalInDoubleFound = true;
+						vProjectFile->m_NamesInDoubleFound = true;
 					}
 				}
 
-				if (codePointGlobalInDoubleFound && 
-					nameGlobalInDoubleFound && 
+				if (vProjectFile->m_CodePointInDoubleFound &&
+					vProjectFile->m_NamesInDoubleFound &&
 					font.second.m_CodePointInDoubleFound &&
 					font.second.m_NameInDoubleFound)
 					break;
 			}
 		}
 
-		if (nameGlobalInDoubleFound)
+		if (vProjectFile->m_NamesInDoubleFound)
 		{
 			Messaging::Instance()->AddError(true, 0, [this](void*)
 			{
@@ -1464,7 +1487,7 @@ void SelectionHelper::AnalyseSourceSelection(ProjectFile *vProjectFile)
 			GeneratorPane::Instance()->AllowStatus(GeneratorStatusFlags::GENERATOR_STATUS_FONT_HEADER_GENERATION_ALLOWED);
 		}
 
-		if (codePointGlobalInDoubleFound)
+		if (vProjectFile->m_CodePointInDoubleFound)
 		{
 			Messaging::Instance()->AddError(true, 0, [this](void*)
 			{
@@ -1527,4 +1550,68 @@ void SelectionHelper::FinalizeSelectionForOperations()
 	}
 	m_ReRangeStruct.startCodePoint.codePoint = inf;
 	m_ReRangeStruct.endCodePoint.codePoint = sup;
+}
+
+std::set<FontInfosCodePoint> SelectionHelper::GetGlyphs_CodepointInDouble_SelectedFont(ProjectFile *vProjectFile, FontInfos *vFontInfos)
+{
+	std::set<FontInfosCodePoint> res;
+
+	std::set<ImWchar> codePoints;
+
+
+	return res;
+}
+
+std::set<FontInfosCodePoint> SelectionHelper::GetGlyphs_CodePointsInDouble_AllFonts(ProjectFile *vProjectFile)
+{
+	std::set<FontInfosCodePoint> res;
+	return res;
+}
+
+std::set<FontInfosCodePoint> SelectionHelper::GetGlyphs_NamesInDouble_SelectedFont(ProjectFile *vProjectFile, FontInfos *vFontInfos)
+{
+	std::set<FontInfosCodePoint> res;
+	return res;
+}
+
+std::set<FontInfosCodePoint> SelectionHelper::GetGlyphs_NamesInDouble_AllFonts(ProjectFile *vProjectFile)
+{
+	std::set<FontInfosCodePoint> res;
+	return res;
+}
+
+void SelectionHelper::SelectGlyphsInDouble(ProjectFile *vProjectFile)
+{
+
+	// std::map<ImWchar, std::vector<GlyphInfos*>> m_GlyphsMergedOrderedByCodePoints;
+	// std::map<std::string, std::vector<GlyphInfos*>> m_GlyphsMergedOrderedByGlyphName;
+
+	m_SelectionForOperation.clear();
+
+	if (FinalFontPane::Instance()->IsCurrentFontPaneMode(CurrentFontPaneModeFlags::CURRENT_FONT_PANE_ORDERED_BY_CODEPOINT))
+	{
+		// codepoints in double
+		// vProjectFile->m_c
+	}
+	else if (FinalFontPane::Instance()->IsCurrentFontPaneMode(CurrentFontPaneModeFlags::CURRENT_FONT_PANE_ORDERED_BY_NAMES))
+	{
+		// names in double
+	}
+
+	if (FinalFontPane::Instance()->IsFinalFontPaneMode(FinalFontPaneModeFlags::FINAL_FONT_PANE_BY_FONT_ORDERED_BY_CODEPOINT))
+	{
+		// codepoints in double
+	}
+	else if (FinalFontPane::Instance()->IsFinalFontPaneMode(FinalFontPaneModeFlags::FINAL_FONT_PANE_BY_FONT_ORDERED_BY_NAMES))
+	{
+		// names in double
+	}
+	else if (FinalFontPane::Instance()->IsFinalFontPaneMode(FinalFontPaneModeFlags::FINAL_FONT_PANE_MERGED_ORDERED_BY_CODEPOINT))
+	{
+		// codepoints in double
+	}
+	else if (FinalFontPane::Instance()->IsFinalFontPaneMode(FinalFontPaneModeFlags::FINAL_FONT_PANE_MERGED_ORDERED_BY_NAMES))
+	{
+		// names in double
+	}
 }

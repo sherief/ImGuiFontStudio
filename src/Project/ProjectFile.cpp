@@ -172,7 +172,7 @@ void ProjectFile::UpdateCountSelectedGlyphs()
 		}
 	}
 
-	SelectionHelper::Instance()->AnalyseSourceSelection(this);
+	SelectionHelper::Instance()->AnalyseSelection(this);
 }
 
 bool ProjectFile::IsRangeColorignShown()

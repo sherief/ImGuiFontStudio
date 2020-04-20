@@ -414,7 +414,7 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 					if (vNameupdated)
 						*vNameupdated = true;
 					vGlyph->newHeaderName = vGlyph->editHeaderName;
-					SelectionHelper::Instance()->AnalyseSourceSelection(vProjectFile);
+					SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 					vProjectFile->SetProjectChange();
 					vGlyph->m_editingName = false;
 				}
@@ -422,6 +422,7 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 				if (ImGui::Button(ICON_IGFS_CANCEL "##cancelname"))
 				{
 					vGlyph->m_editingName = false;
+					SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 				}
 				ImGui::SameLine();
 				ImGui::PushItemWidth(
@@ -447,7 +448,7 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 					if (vNameupdated)
 						*vNameupdated = true;
 					vGlyph->newHeaderName = vGlyph->oldHeaderName;
-					SelectionHelper::Instance()->AnalyseSourceSelection(vProjectFile);
+					SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 					vProjectFile->SetProjectChange();
 				}
 				ImGui::PopItemWidth();
@@ -473,7 +474,7 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 					if (vCodePointUpdated)
 						*vCodePointUpdated = true;
 					vGlyph->newCodePoint = (ImWchar)vGlyph->editCodePoint;// range 0 => 2^16;
-					SelectionHelper::Instance()->AnalyseSourceSelection(vProjectFile);
+					SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 					vProjectFile->SetProjectChange();
 					vGlyph->m_editingCodePoint = false;
 				}
@@ -485,6 +486,7 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 						vGlyph->m_editingCodePoint = false;
 					}
 					ImGui::SameLine();
+					SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 					ImGui::PushItemWidth(
 						GLYH_EDIT_CONTROl_WIDTH - 
 						ImGui::GetCursorScreenPos().x + x -
@@ -515,7 +517,7 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 					if (vCodePointUpdated)
 						*vCodePointUpdated = true;
 					vGlyph->newCodePoint = vGlyph->glyph.Codepoint;
-					SelectionHelper::Instance()->AnalyseSourceSelection(vProjectFile);
+					SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 					vProjectFile->SetProjectChange();
 				}
 				ImGui::PopItemWidth();
@@ -1346,3 +1348,92 @@ void FinalFontPane::DrawSelectionMergedOrderedByGlyphNames(ProjectFile *vProject
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+////// ERROR CORRECTION ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+void FinalFontPane::Correct_Auto_AllFonts(ProjectFile *vProjectFile)
+{
+	Correct_Auto_AllFonts_CodePoints(vProjectFile);
+	Correct_Auto_AllFonts_Names(vProjectFile);
+}
+
+void FinalFontPane::Correct_Auto_AllFonts_CodePoints(ProjectFile *vProjectFile)
+{
+	if (vProjectFile && vProjectFile->IsLoaded())
+	{
+		// on va trouver les codepoint en doublons
+		// on va deplacer ce codepoint jusqu'au 1er trou disponible
+		// on va d'abord determiner dans quel sens aller et si il y a de la place
+		// ca lister le debut et la fin et le nombre d'espace disponibles
+		// en gros si depuis le glyph et la fin cad 65535, il n'y a rien alors il va falloir aller dans l'autre sens
+		// sauf que si depuis le glyph jusqu'au codepoint 0 il n'y a pas d'espace alors ca n'ira pas
+		/*std::set<ImWchar> codePoints;
+		for (auto &font : vProjectFile->m_Fonts)
+		{
+			for (auto &selection : font.second.m_SelectedGlyphs)
+			{
+				codePoints.emplace(selection.first);
+			}
+		}
+
+		ImWchar pos = vOffsetCodePoint;
+		for (auto & codePoint : m_SelectionForOperation)
+		{
+			auto fontInfos = codePoint.second;
+			if (fontInfos)
+			{
+				while (codePoints.find(pos) != codePoints.end())
+					pos++;
+
+				if (codePoints.find(pos) == codePoints.end()) // not found
+				{
+					if (fontInfos->m_SelectedGlyphs.find(codePoint.first) != fontInfos->m_SelectedGlyphs.end()) // found
+					{
+						if (pos >= m_ReRangeStruct.MinCodePoint && pos <= m_ReRangeStruct.MaxCodePoint)
+						{
+							fontInfos->m_SelectedGlyphs[codePoint.first].newCodePoint = pos;
+							pos++;
+							vProjectFile->SetProjectChange();
+						}
+					}
+					else
+					{
+						assert(0); // pas normal d'arriver la
+					}
+				}
+			}
+		}
+
+		PrepareSelection(vProjectFile, SelectionContainerEnum::SELECTION_CONTAINER_FINAL);*/
+	}
+}
+
+void FinalFontPane::Correct_Auto_AllFonts_Names(ProjectFile *vProjectFile)
+{
+	if (vProjectFile && vProjectFile->IsLoaded())
+	{
+
+	}
+}
+
+void FinalFontPane::Correct_Auto_SelectedFont(ProjectFile *vProjectFile, FontInfos *vFontInfos)
+{
+
+}
+
+void FinalFontPane::Correct_Auto_SelectedFont_CodePoints(ProjectFile *vProjectFile, FontInfos *vFontInfos)
+{
+	if (vProjectFile && vProjectFile->IsLoaded() && vFontInfos)
+	{
+
+	}
+}
+
+void FinalFontPane::Correct_Auto_SelectedFont_Names(ProjectFile *vProjectFile, FontInfos *vFontInfos)
+{
+	if (vProjectFile && vProjectFile->IsLoaded() && vFontInfos)
+	{
+
+	}
+}

@@ -114,7 +114,7 @@ void Messaging::Draw(ProjectFile *vProjectFile)
 	if (ImGui::MenuItem(ICON_IGFS_REFRESH "##Refresh"))
 	{
 		Messaging::Instance()->Clear();
-		SelectionHelper::Instance()->AnalyseSourceSelection(vProjectFile);
+		SelectionHelper::Instance()->AnalyseSelection(vProjectFile);
 	}
 
 	if (!m_Messages.empty())
@@ -261,4 +261,24 @@ void Messaging::Clear()
 {
 	m_Messages.clear();
 	m_MessageExistFlags = MessageExistFlags::MESSAGE_EXIST_NONE;
+}
+
+bool Messaging::IsThereSomeErrors()
+{
+	return (m_MessageExistFlags & MessageExistFlags::MESSAGE_EXIST_ERROR);
+}
+
+bool Messaging::IsThereSomeWarnings()
+{
+	return (m_MessageExistFlags & MessageExistFlags::MESSAGE_EXIST_WARNING);
+}
+
+bool Messaging::IsThereSomeInfos()
+{
+	return (m_MessageExistFlags & MessageExistFlags::MESSAGE_EXIST_INFOS);
+}
+
+bool Messaging::IsThereSomeMessages()
+{
+	return (m_MessageExistFlags != MessageExistFlags::MESSAGE_EXIST_NONE);
 }

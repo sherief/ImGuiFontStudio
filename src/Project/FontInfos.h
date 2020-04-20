@@ -31,6 +31,24 @@ struct GlyphsRange
 	int rangeEnd = 0;
 };
 
+struct HeaderFileCPPStruct
+{
+	bool isOk = false;
+	std::string prefix;
+	std::string bufferName;
+	size_t bufferSize = 0;
+	size_t rangeMin = 0;
+	size_t rangeMax = 0;
+	std::map<std::string, size_t> database; // glyph name, codepoint
+};
+struct SourceFileCPPStruct
+{
+	bool isOk = false;
+	std::string prefix;
+	std::string bufferName;
+	std::string buffer;
+};
+
 class ProjectFile;
 class FontInfos : public conf::ConfigAbstract
 {
@@ -41,8 +59,6 @@ public: // not to save
 	char m_SearchBuffer[1024] = "\0";
 	ImFontConfig m_FontConfig;
 	bool m_NeedFilePathResolve = false; // the path is not found, need resolve for not lost glyphs datas
-	bool m_NameInDoubleFound = false;
-	bool m_CodePointInDoubleFound = false;
 	std::map<ImWchar, std::vector<GlyphInfos*>> m_GlyphsOrderedByCodePoints;
 	std::map<std::string, std::vector<GlyphInfos*>> m_GlyphsOrderedByGlyphName;
 	int m_Ascent = 0;
@@ -52,6 +68,10 @@ public: // not to save
 	float m_Point = 0.0f;
 	std::string m_FontFileName;
 	
+public: // not to save // errors => will full or partially block generation
+	bool m_NameInDoubleFound = false;
+	bool m_CodePointInDoubleFound = false;
+
 public: // to save
 	std::map<ImWchar, GlyphInfos> m_SelectedGlyphs;
 	std::string m_FontPrefix; // peut servir pour la generation par lot
@@ -65,6 +85,16 @@ public: // callable
 	void Clear();
 	std::string GetGlyphName(ImWchar vCodePoint);
 	void DrawInfos();
+
+private: // Loader
+	bool Load_TTF_OTF_FontFile(ProjectFile *vProjectFile, const std::string& vFontFilePathName);
+	bool Load_CPP_Source_File(ProjectFile *vProjectFile, const std::string& vFontFilePathName);
+
+private: // Cpp / h Helper
+	HeaderFileCPPStruct ParseHeaderFile_CPP(const std::string& vHeaderFile);
+	SourceFileCPPStruct ParseSourceFile_CPP(const std::string& vSourceFile, HeaderFileCPPStruct vHeader);
+	size_t ParseCodePoint(const std::string vBuffer, size_t vLastLoc, const std::string& vKeyToSearch,
+		std::string *vTag, size_t *vNum, bool vConvertUTF8);
 
 private: // Glyph Names Extraction / DB
 	void FillGlyphNames();

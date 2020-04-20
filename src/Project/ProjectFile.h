@@ -54,6 +54,10 @@ private: // dont save
 	bool m_NeverSaved = false;
 	bool m_IsThereAnyNotSavedChanged = false;
 
+public: // dont save // errors
+	bool m_NamesInDoubleFound = false;
+	bool m_CodePointInDoubleFound = false;
+
 public:
 	ProjectFile();
 	ProjectFile(const std::string& vFilePathName);

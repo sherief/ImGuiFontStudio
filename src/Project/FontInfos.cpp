@@ -30,10 +30,84 @@
 
 #include <glad/glad.h>
 
-FontInfos::FontInfos() = default;
-FontInfos::~FontInfos() = default;
+#include <iostream>
+#include <sstream>
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/////////// PUBLIC ////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFilePathName)
+{
+	bool res = false;
+
+	auto ps = FileHelper::Instance()->ParsePathFileName(vFontFilePathName);
+	if (ps.isOk)
+	{
+		if (ps.ext == "ttf" || ps.ext == "otf")
+		{
+			res = Load_TTF_OTF_FontFile(vProjectFile, vFontFilePathName);
+		}
+		else if (ps.ext == "cpp")
+		{
+			res = Load_CPP_Source_File(vProjectFile, vFontFilePathName);
+		}
+	}
+	
+	return res;
+}
+
+void FontInfos::Clear()
+{
+	DestroyFontTexture();
+	m_ImFontAtlas.Clear();
+	m_GlyphNames.clear();
+	m_GlyphCodePointNames.clear();
+	m_SelectedGlyphs.clear();
+	m_Filters.clear();
+}
+
+std::string FontInfos::GetGlyphName(ImWchar vCodePoint)
+{
+	if (m_GlyphCodePointNames.find(vCodePoint) != m_GlyphCodePointNames.end())
+	{
+		return m_GlyphCodePointNames[vCodePoint];
+	}
+	return "Symbol Name";
+}
+
+void FontInfos::DrawInfos()
+{
+	if (!m_ImFontAtlas.Fonts.empty())
+	{
+		if (ImGui::BeginFramedGroup("Current Font Infos"))
+		{
+			if (!m_FontFilePathName.empty())
+			{
+				ImGui::Text("[Font path]");
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip("%s", m_FontFilePathName.c_str());
+			}
+
+			ImGui::Text("Count Glyphs : %i", m_ImFontAtlas.Fonts[0]->Glyphs.size());
+			ImGui::Text("Count Selected Glyphs : %u", m_SelectedGlyphs.size());
+			ImGui::Text("Texture Size : %i x %i", m_ImFontAtlas.TexWidth, m_ImFontAtlas.TexHeight);
+			ImGui::Text("Ascent / Descent : %i / %i", m_Ascent, m_Descent);
+			//ImGui::Text("Line gap : %i", m_LineGap); // dont know what is it haha
+			//ImGui::Text("Scale pixel height : %.4f", m_Point); // same.., its used internally by ImGui but dont know what is it
+			ImGui::Text("Glyph Bounding Box :\n\tinf x : %i, inf y : %i\n\tsup x : %i, sup y : %i", 
+				m_BoundingBox.x, m_BoundingBox.y, m_BoundingBox.z, m_BoundingBox.w);
+
+			ImGui::EndFramedGroup(true);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/////////// PRIVATE : LOADERS /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+bool FontInfos::Load_TTF_OTF_FontFile(ProjectFile *vProjectFile, const std::string& vFontFilePathName)
 {
 	bool res = false;
 
@@ -41,12 +115,12 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 		return res;
 
 	std::string fontFilePathName = FileHelper::Instance()->CorrectFilePathName(vFontFilePathName);
-	
+
 	if (!FileHelper::Instance()->IsAbsolutePath(fontFilePathName))
 	{
 		fontFilePathName = vProjectFile->GetAbsolutePath(fontFilePathName);
 	}
-	
+
 	if (FileHelper::Instance()->IsFileExist(fontFilePathName))
 	{
 		static const ImWchar ranges[] =
@@ -128,15 +202,333 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 	return res;
 }
 
-void FontInfos::Clear()
+bool FontInfos::Load_CPP_Source_File(ProjectFile *vProjectFile, const std::string& vFontFilePathName)
 {
-	DestroyFontTexture();
-	m_ImFontAtlas.Clear();
-	m_GlyphNames.clear();
-	m_GlyphCodePointNames.clear();
-	m_SelectedGlyphs.clear();
-	m_Filters.clear();
+	bool res = false;
+
+	if (!vProjectFile && vProjectFile->IsLoaded())
+		return res;
+
+	std::string fontFilePathName = FileHelper::Instance()->CorrectFilePathName(vFontFilePathName);
+
+	if (!FileHelper::Instance()->IsAbsolutePath(fontFilePathName))
+	{
+		fontFilePathName = vProjectFile->GetAbsolutePath(fontFilePathName);
+	}
+
+	if (FileHelper::Instance()->IsFileExist(fontFilePathName))
+	{
+		// need to be sure a header file is present
+		auto ps = FileHelper::Instance()->ParsePathFileName(fontFilePathName);
+		if (ps.isOk)
+		{
+			std::string cppFile = fontFilePathName;
+			std::string headerFile = ps.GetFilePathWithNameExt(ps.name, ".h");
+			if (!FileHelper::Instance()->IsFileExist(headerFile))
+			{
+				Messaging::Instance()->AddError(true, 0, 0, "No Corresponding '.h' header file found for cpp file %s", vFontFilePathName.c_str());
+				res = false;
+			}
+			else
+			{
+				// todo : il va plutot falloir prendre le h qui est en include dans le fichier cpp ca a plus de sens
+				// donc parse du cpp ,puis dedans parse du h, puis finition du cpp avec le parse du buffer
+
+				HeaderFileCPPStruct header = ParseHeaderFile_CPP(headerFile);
+				if (header.isOk)
+				{
+					SourceFileCPPStruct source = ParseSourceFile_CPP(cppFile, header);
+					if (source.isOk)
+					{
+						// on va charger le buffer
+
+						static const ImWchar ranges[] =
+						{
+							0x0020,
+							0xFFFF, // Full Range
+							0,
+						};
+						m_FontConfig.GlyphRanges = &ranges[0];
+						m_FontConfig.OversampleH = m_Oversample;
+						m_FontConfig.OversampleV = m_Oversample;
+						m_ImFontAtlas.Clear();
+						m_ImFontAtlas.Flags = m_ImFontAtlas.Flags | ImFontAtlasFlags_NoMouseCursors;
+
+						//ImWchar icons_ranges[3] = { (ImWchar)header.rangeMin, (ImWchar)header.rangeMax, 0 };
+						//ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+						//ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF((const char*)source.buffer.data(), 15.0f, &icons_config, icons_ranges);
+
+						ImFont *font = m_ImFontAtlas.AddFontFromMemoryCompressedBase85TTF(
+							source.buffer.c_str(),
+							m_FontSize,
+							&m_FontConfig);
+						//&icons_config, icons_ranges);
+						if (font)
+						{
+							if (m_ImFontAtlas.Build())
+							{
+								if (!m_ImFontAtlas.Fonts.empty())
+								{
+									if (m_FontPrefix.empty())
+										m_FontPrefix = Utils::Instance()->GetPrefixFromFontFileName(ps.name);
+
+									m_FontFilePathName = vProjectFile->GetRelativePath(fontFilePathName);
+
+									DestroyFontTexture();
+									CreateFontTexture();
+
+									FillGlyphNames();
+									GenerateCodePointToGlypNamesDB();
+									GetInfos();
+
+									// update glyph ptrs
+									for (auto &it : m_SelectedGlyphs)
+									{
+										ImWchar codePoint = it.first;
+
+										auto glyph = font->FindGlyphNoFallback(codePoint);
+										if (glyph)
+										{
+											it.second.glyph = *glyph;
+											it.second.oldHeaderName = GetGlyphName(codePoint);
+										}
+									}
+
+									m_NeedFilePathResolve = false;
+
+									res = true;
+								}
+							}
+							else
+							{
+								Messaging::Instance()->AddError(true, 0, 0, "The  Buffer %s.%s seem to be bad. Can't load", ps.name.c_str(), ps.ext.c_str());
+							}
+						}
+						else
+						{
+							Messaging::Instance()->AddError(true, 0, 0, "The  Buffer %s.%s seem to be bad. Can't load", ps.name.c_str(), ps.ext.c_str());
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		Messaging::Instance()->AddError(true, 0, 0, "font %s not found", fontFilePathName.c_str());
+		m_NeedFilePathResolve = true;
+	}
+
+	vProjectFile->SetProjectChange();
+
+	return res;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/////////// PRIVATE : CPP / H HELPER //////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+HeaderFileCPPStruct FontInfos::ParseHeaderFile_CPP(const std::string& vHeaderFile)
+{
+	HeaderFileCPPStruct res;
+
+	if (!vHeaderFile.empty())
+	{
+		std::string headerCode = FileHelper::Instance()->LoadFileToString(vHeaderFile);
+		if (!headerCode.empty())
+		{
+			std::string prefixToSearch = "FONT_ICON_BUFFER_NAME_";
+			size_t prefixLoc = headerCode.find(prefixToSearch);
+			if (prefixLoc != std::string::npos)
+			{
+				prefixLoc += prefixToSearch.size();
+				size_t space = headerCode.find(" ", prefixLoc);
+				if (space != std::string::npos)
+				{
+					res.prefix = headerCode.substr(prefixLoc, space - prefixLoc);
+					ct::replaceString(res.prefix, " ", "");
+					space += 1;
+					size_t endl = headerCode.find("\n", space);
+					if (endl != std::string::npos)
+					{
+						res.bufferName = headerCode.substr(space, endl - space);
+						ct::replaceString(res.bufferName, " ", "");
+					}
+				}
+
+				if (!res.prefix.empty() && !res.bufferName.empty())
+				{
+					prefixToSearch = "FONT_ICON_BUFFER_SIZE_" + res.prefix;
+					prefixLoc = headerCode.find(prefixToSearch);
+					if (prefixLoc != std::string::npos)
+					{
+						prefixLoc += prefixToSearch.size();
+						size_t endl = headerCode.find("\n", prefixLoc);
+						if (endl != std::string::npos)
+						{
+							std::string strSize = headerCode.substr(prefixLoc, endl - prefixLoc);
+							ct::replaceString(strSize, " ", "");
+							size_t len = 0;
+							res.bufferSize = std::stoi(strSize, &len, 16);
+							prefixLoc = endl;
+						}
+					}
+
+					std::string tagFound; size_t cdpFound = 0;
+					size_t newLoc = ParseCodePoint(headerCode, prefixLoc + 1, "ICON_MIN_" + res.prefix, &tagFound, &cdpFound, false);
+					if (newLoc != std::string::npos)
+					{
+						res.rangeMin = cdpFound;
+						newLoc = ParseCodePoint(headerCode, newLoc, "ICON_MAX_" + res.prefix, &tagFound, &cdpFound, false);
+						if (newLoc != std::string::npos)
+						{
+							res.rangeMax = cdpFound;
+							prefixLoc = newLoc;
+
+							size_t loc = prefixLoc;
+							while ((loc = ParseCodePoint(headerCode, loc, "ICON_" + res.prefix + "_", &tagFound, &cdpFound, true)) != std::string::npos)
+							{
+								if (!tagFound.empty() && cdpFound < 65536)
+								{
+									res.database[tagFound] = cdpFound;
+								}
+								loc += 1;
+							}
+
+							if (!res.database.empty())
+							{
+								res.isOk = true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return res;
+}
+
+SourceFileCPPStruct FontInfos::ParseSourceFile_CPP(const std::string& vSourceFile, HeaderFileCPPStruct vHeader)
+{
+	SourceFileCPPStruct res;
+
+	if (!vSourceFile.empty() && vHeader.isOk)
+	{
+		std::string sourceCode = FileHelper::Instance()->LoadFileToString(vSourceFile);
+		if (!sourceCode.empty())
+		{
+			res.bufferName = vHeader.bufferName;
+			res.prefix = vHeader.prefix;
+
+			std::string tagToSearch = "FONT_ICON_BUFFER_NAME_" + res.prefix;
+			size_t tagLoc = sourceCode.find(tagToSearch);
+			if (tagLoc != std::string::npos)
+			{
+				tagLoc += tagToSearch.size();
+				size_t equal = sourceCode.find("=", tagLoc);
+				if (equal != std::string::npos)
+				{
+					size_t bufSize = 0;
+					std::string sizeStr = sourceCode.substr(tagLoc, equal - tagLoc);
+					ct::replaceString(sizeStr, "[", "");
+					ct::replaceString(sizeStr, "]", "");
+					ct::replaceString(sizeStr, " ", "");
+					ct::replaceString(sizeStr, "\n", "");
+					ct::replaceString(sizeStr, "\t", "");
+					ct::replaceString(sizeStr, "\r", "");
+					size_t notAnumber = sizeStr.find_first_not_of("0123456789");
+					if (notAnumber != std::string::npos)
+					{
+						if (sizeStr[notAnumber] == '+')
+						{
+							ct::replaceString(sizeStr, "+1", "");
+							bufSize = 1;
+						}
+					}
+
+					try
+					{
+						size_t len = 0;
+						bufSize += std::stoi(sizeStr, &len, 10);
+					}
+					catch (const std::exception& e)
+					{
+
+					}
+
+					// buffer
+					std::string buffer = sourceCode.substr(equal + 1);
+					ct::replaceString(buffer, " ", "");
+					ct::replaceString(buffer, "\"", "");
+					ct::replaceString(buffer, "\n", "");
+					ct::replaceString(buffer, "\t", "");
+					ct::replaceString(buffer, "\r", "");
+
+					if (buffer[buffer.size() - 1] == ';')
+						buffer = buffer.substr(0, buffer.size() - 1);
+
+					if (bufSize == buffer.size())
+					{
+						res.buffer = buffer;
+						res.isOk = true;
+					}
+				}
+			}
+		}
+	}
+
+	return res;
+}
+
+size_t FontInfos::ParseCodePoint(const std::string vBuffer, size_t vLastLoc, const std::string& vKeyToSearch,
+	std::string *vTag, size_t *vNum, bool vConvertUTF8)
+{
+	size_t res = 0;
+
+	if (!vBuffer.empty() && vTag && vNum)
+	{
+		res = vBuffer.find(vKeyToSearch, vLastLoc);
+		if (res != std::string::npos)
+		{
+			res += vKeyToSearch.size();
+			size_t space = vBuffer.find(" ", res);
+			if (space != std::string::npos)
+			{
+				if (space > res)
+				{
+					std::string tag = vBuffer.substr(res, space - res);;
+					ct::replaceString(tag, " ", "");
+					(*vTag) = tag;
+				}
+
+				res = space;
+				space += 1;
+				size_t endl = vBuffer.find("\n", res);
+				if (endl != std::string::npos)
+				{
+					std::string cdp = vBuffer.substr(space, endl - space);
+					ct::replaceString(cdp, " ", "");
+					if (vConvertUTF8)
+					{
+						ct::replaceString(cdp, "\"", ""); //  u8"\uf15b" => u8\uf15b
+						ct::replaceString(cdp, "u8\\u", ""); //  u8\uf15b => f15b"
+					}
+					
+					size_t len = 0;
+					(*vNum) = std::stoi(cdp, &len, 16);
+					res = endl + 1;
+				}
+			}
+		}
+	}
+
+	return res;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+/////////// PRIVATE : GLYPH NAMES EXTRACTION DB ///////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 static const char *standardMacNames[258] = { ".notdef", ".null", "nonmarkingreturn", "space", "exclam", "quotedbl", "numbersign", "dollar", "percent", "ampersand", "quotesingle", "parenleft", "parenright", "asterisk", "plus", "comma", "hyphen", "period", "slash", "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "colon", "semicolon", "less", "equal", "greater", "question", "at", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "bracketleft", "backslash", "bracketright", "asciicircum", "underscore", "grave", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "braceleft", "bar", "braceright", "asciitilde", "Adieresis", "Aring", "Ccedilla", "Eacute", "Ntilde", "Odieresis", "Udieresis", "aacute", "agrave", "acircumflex", "adieresis", "atilde", "aring", "ccedilla", "eacute", "egrave", "ecircumflex", "edieresis", "iacute", "igrave", "icircumflex", "idieresis", "ntilde", "oacute", "ograve", "ocircumflex", "odieresis", "otilde", "uacute", "ugrave", "ucircumflex", "udieresis", "dagger", "degree", "cent", "sterling", "section", "bullet", "paragraph", "germandbls", "registered", "copyright", "trademark", "acute", "dieresis", "notequal", "AE", "Oslash", "infinity", "plusminus", "lessequal", "greaterequal", "yen", "mu", "partialdiff", "summation", "product", "pi", "integral", "ordfeminine", "ordmasculine", "Omega", "ae", "oslash", "questiondown", "exclamdown", "logicalnot", "radical", "florin", "approxequal", "Delta", "guillemotleft", "guillemotright", "ellipsis", "nonbreakingspace", "Agrave", "Atilde", "Otilde", "OE", "oe", "endash", "emdash", "quotedblleft", "quotedblright", "quoteleft", "quoteright", "divide", "lozenge", "ydieresis", "Ydieresis", "fraction", "currency", "guilsinglleft", "guilsinglright", "fi", "fl", "daggerdbl", "periodcentered", "quotesinglbase", "quotedblbase", "perthousand", "Acircumflex", "Ecircumflex", "Aacute", "Edieresis", "Egrave", "Iacute", "Icircumflex", "Idieresis", "Igrave", "Oacute", "Ocircumflex", "apple", "Ograve", "Uacute", "Ucircumflex", "Ugrave", "dotlessi", "circumflex", "tilde", "macron", "breve", "dotaccent", "ring", "cedilla", "hungarumlaut", "ogonek", "caron", "Lslash", "lslash", "Scaron", "scaron", "Zcaron", "zcaron", "brokenbar", "Eth", "eth", "Yacute", "yacute", "Thorn", "thorn", "minus", "multiply", "onesuperior", "twosuperior", "threesuperior", "onehalf", "onequarter", "threequarters", "franc", "Gbreve", "gbreve", "Idotaccent", "Scedilla", "scedilla", "Cacute", "cacute", "Ccaron", "ccaron", "dcroat" };
 void FontInfos::FillGlyphNames()
@@ -220,56 +612,6 @@ void FontInfos::FillGlyphNames()
 	}
 }
 
-std::string FontInfos::GetGlyphName(ImWchar vCodePoint)
-{
-	if (m_GlyphCodePointNames.find(vCodePoint) != m_GlyphCodePointNames.end())
-	{
-		return m_GlyphCodePointNames[vCodePoint];
-	}
-	return "Symbol Name";
-}
-
-void FontInfos::DrawInfos()
-{
-	if (!m_ImFontAtlas.Fonts.empty())
-	{
-		if (ImGui::BeginFramedGroup("Current Font Infos"))
-		{
-			if (!m_FontFilePathName.empty())
-			{
-				ImGui::Text("[Font path]");
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("%s", m_FontFilePathName.c_str());
-			}
-
-			ImGui::Text("Count Glyphs : %i", m_ImFontAtlas.Fonts[0]->Glyphs.size());
-			ImGui::Text("Count Selected Glyphs : %u", m_SelectedGlyphs.size());
-			ImGui::Text("Texture Size : %i x %i", m_ImFontAtlas.TexWidth, m_ImFontAtlas.TexHeight);
-			ImGui::Text("Ascent / Descent : %i / %i", m_Ascent, m_Descent);
-			//ImGui::Text("Line gap : %i", m_LineGap); // dont know what is it haha
-			//ImGui::Text("Scale pixel height : %.4f", m_Point); // same.., its used internally by ImGui but dont know what is it
-			ImGui::Text("Glyph Bounding Box :\n\tinf x : %i, inf y : %i\n\tsup x : %i, sup y : %i", 
-				m_BoundingBox.x, m_BoundingBox.y, m_BoundingBox.z, m_BoundingBox.w);
-
-			ImGui::EndFramedGroup(true);
-		}
-	}
-}
-
-void FontInfos::GetInfos()
-{
-	stbtt_fontinfo fontInfo;
-	const int font_offset = stbtt_GetFontOffsetForIndex(
-		(unsigned char*)m_ImFontAtlas.ConfigData[0].FontData,
-		m_ImFontAtlas.ConfigData[0].FontNo);
-	if (stbtt_InitFont(&fontInfo, (unsigned char*)m_ImFontAtlas.ConfigData[0].FontData, font_offset))
-	{
-		stbtt_GetFontVMetrics(&fontInfo, &m_Ascent, &m_Descent, &m_LineGap);
-		stbtt_GetFontBoundingBox(&fontInfo, &m_BoundingBox.x, &m_BoundingBox.y, &m_BoundingBox.z, &m_BoundingBox.w);
-		m_Point = stbtt_ScaleForPixelHeight(&fontInfo, (float)m_FontSize);
-	}
-}
-
 void FontInfos::GenerateCodePointToGlypNamesDB()
 {
 	if (!m_ImFontAtlas.ConfigData.empty())
@@ -306,8 +648,22 @@ void FontInfos::GenerateCodePointToGlypNamesDB()
 	}
 }
 
+void FontInfos::GetInfos()
+{
+	stbtt_fontinfo fontInfo;
+	const int font_offset = stbtt_GetFontOffsetForIndex(
+		(unsigned char*)m_ImFontAtlas.ConfigData[0].FontData,
+		m_ImFontAtlas.ConfigData[0].FontNo);
+	if (stbtt_InitFont(&fontInfo, (unsigned char*)m_ImFontAtlas.ConfigData[0].FontData, font_offset))
+	{
+		stbtt_GetFontVMetrics(&fontInfo, &m_Ascent, &m_Descent, &m_LineGap);
+		stbtt_GetFontBoundingBox(&fontInfo, &m_BoundingBox.x, &m_BoundingBox.y, &m_BoundingBox.z, &m_BoundingBox.w);
+		m_Point = stbtt_ScaleForPixelHeight(&fontInfo, (float)m_FontSize);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////
-//// FONT TEXTURE ////////////////////////////////////////////////////////////
+//// PRIVATE : OPENGL TEXTURE ////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 void FontInfos::CreateFontTexture()
@@ -348,7 +704,7 @@ void FontInfos::DestroyFontTexture()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-//// CONFIG FILE /////////////////////////////////////////////////////////////
+//// PRIVATE : CONFIGURATION /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 std::string FontInfos::getXml(const std::string& vOffset)
@@ -472,3 +828,10 @@ void FontInfos::setFromXml(tinyxml2::XMLElement* vElem, tinyxml2::XMLElement* vP
 		}
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////
+//// CONSTRUCTORS / DESTRUCTORS  /////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+FontInfos::FontInfos() = default;
+FontInfos::~FontInfos() = default;

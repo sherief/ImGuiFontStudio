@@ -1,0 +1,26 @@
+<config>
+	<project>
+		<font name="SentyWEN2017.ttf">
+			<prefix>SWEN</prefix>
+			<pathfilename>C:\gamedev\github\ImGuiFontStudio\samples_Fonts\SentyWEN2017.ttf</pathfilename>
+			<oversample>1</oversample>
+			<fontsize>17</fontsize>
+		</font>
+		<font name="fontawesome-webfont.ttf">
+			<prefix></prefix>
+			<pathfilename>C:\gamedev\github\ImGuiFontStudio\samples_Fonts\fontawesome-webfont.ttf</pathfilename>
+			<oversample>1</oversample>
+			<fontsize>17</fontsize>
+		</font>
+		<rangecoloring show="false" hash="10;15;35;0.5"/>
+		<previewcountglyph_x>20</previewcountglyph_x>
+		<mergedfontprefix></mergedfontprefix>
+		<curglyphtooltip>true</curglyphtooltip>
+		<srcglyphtooltip>true</srcglyphtooltip>
+		<dstglyphtooltip>true</dstglyphtooltip>
+		<glyphpreviewscale>0.193</glyphpreviewscale>
+		<glyphpreviewshowcontrollines>false</glyphpreviewshowcontrollines>
+		<genmode>347</genmode>
+		<fonttomergein>SentyWEN2017.ttf</fonttomergein>
+	</project>
+</config>

@@ -96,6 +96,15 @@ private:
 	void PrepareSelectionMergedOrderedByGlyphNames(ProjectFile *vProjectFile);
 	void DrawSelectionMergedOrderedByGlyphNames(ProjectFile *vProjectFile);
 	
+public:
+	void Correct_Auto_AllFonts(ProjectFile *vProjectFile);
+	void Correct_Auto_AllFonts_CodePoints(ProjectFile *vProjectFile);
+	void Correct_Auto_AllFonts_Names(ProjectFile *vProjectFile);
+	
+	void Correct_Auto_SelectedFont(ProjectFile *vProjectFile, FontInfos *vFontInfos);
+	void Correct_Auto_SelectedFont_CodePoints(ProjectFile *vProjectFile, FontInfos *vFontInfos);
+	void Correct_Auto_SelectedFont_Names(ProjectFile *vProjectFile, FontInfos *vFontInfos);
+	
 public: // singleton
 	static FinalFontPane *Instance()
 	{

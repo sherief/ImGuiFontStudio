@@ -67,6 +67,10 @@ public:
 	void ClearWarnings();
 	void ClearInfos();
 	void Clear();
+	bool IsThereSomeErrors();
+	bool IsThereSomeWarnings();
+	bool IsThereSomeInfos();
+	bool IsThereSomeMessages();
 
 public: // singleton
 	static Messaging *Instance()
