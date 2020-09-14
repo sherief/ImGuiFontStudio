@@ -29,3 +29,6 @@
 	path = 3rdparty/imgui
 	url = https://github.com/aiekick/imgui.git
 	branch = tables_merged_in_docking
+[submodule "3rdparty/freetype2"]
+	path = 3rdparty/freetype2
+	url = https://github.com/freetype/freetype2.git

@@ -6,6 +6,10 @@
 #include "src/ImguiImpl/imgui_impl_opengl3.h"
 #include <stdio.h>
 
+//free type
+#include <misc/freetype/imgui_freetype.h>
+#include <misc/freetype/imgui_freetype.cpp>
+
 #include <FileHelper.h>
 #include "src/MainFrame.h"
 #include "Res/CustomFont.cpp"
@@ -89,13 +93,15 @@ int main(int, char**argv)
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
+	
 	// load memory font file
 	ImGui::GetIO().Fonts->AddFontDefault();
 	static const ImWchar icons_ranges[] = { ICON_MIN_IGFS, ICON_MAX_IGFS, 0 };
 	ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
 	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_IGFS, 15.0f, &icons_config, icons_ranges);
-
+	
+	ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts, ImGuiFreeType::LightHinting);
+	
 	MainFrame::Instance(mainWindow)->Init();
 
     // Main loop

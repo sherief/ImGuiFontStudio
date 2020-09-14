@@ -18,6 +18,10 @@
  */
 #include "FontInfos.h"
 
+//free type
+#include <misc/freetype/imgui_freetype.h>
+//#include <misc/freetype/imgui_freetype.cpp>
+
 #include <FileHelper.h>
 #include "Project/ProjectFile.h"
 #include "Gui/ImGuiWidgets.h"
@@ -92,7 +96,8 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 				&m_FontConfig);
 			if (font)
 			{
-				if (m_ImFontAtlas.Build())
+				if (ImGuiFreeType::BuildFontAtlas(&m_ImFontAtlas, ImGuiFreeType::LightHinting))
+				//if (m_ImFontAtlas.Build())
 				{
 					if (!m_ImFontAtlas.Fonts.empty())
 					{
