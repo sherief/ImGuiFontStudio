@@ -33,6 +33,11 @@
 
 #include <glad/glad.h>
 
+RasterizerEnum FontInfos::rasterizerMode = RasterizerEnum::RASTERIZER_STB;
+uint32_t FontInfos::freeTypeFlag = 0;
+float FontInfos::fontsMultiply = 1.0f;
+int32_t FontInfos::fontsPadding = 1;
+
 FontInfos::FontInfos() = default;
 FontInfos::~FontInfos() = default;
 
@@ -90,14 +95,26 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 		{
 			m_FontFileName = ps.name + "." + ps.ext;
 
-			ImFont *font = m_ImFontAtlas.AddFontFromFileTTF(
-				fontFilePathName.c_str(),
-				(float)m_FontSize,
-				&m_FontConfig);
+			ImFont *font = m_ImFontAtlas.AddFontFromFileTTF(fontFilePathName.c_str(), (float)m_FontSize, &m_FontConfig);
 			if (font)
 			{
-				if (ImGuiFreeType::BuildFontAtlas(&m_ImFontAtlas, ImGuiFreeType::LightHinting))
-				//if (m_ImFontAtlas.Build())
+				bool success = false;
+				
+				{
+					m_ImFontAtlas.TexGlyphPadding = fontsPadding;
+					for (int n = 0; n < m_ImFontAtlas.ConfigData.Size; n++)
+					{
+						ImFontConfig* font_config = (ImFontConfig*)&m_ImFontAtlas.ConfigData[n];
+						font_config->RasterizerMultiply = fontsMultiply;
+						font_config->RasterizerFlags = (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE) ? freeTypeFlag : 0x00;
+					}
+					if (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE)
+						success = ImGuiFreeType::BuildFontAtlas(&m_ImFontAtlas, ImGuiFreeType::LightHinting);
+					else if (rasterizerMode == RasterizerEnum::RASTERIZER_STB)
+						success = m_ImFontAtlas.Build();
+				}
+
+				if (success)
 				{
 					if (!m_ImFontAtlas.Fonts.empty())
 					{

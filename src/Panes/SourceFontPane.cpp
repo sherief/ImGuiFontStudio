@@ -18,13 +18,17 @@
  */
 #include "SourceFontPane.h"
 
-#include "ImGuiFileDialog/ImGuiFileDialog/ImGuiFileDialog.h"
+#include <ImGuiFileDialog/ImGuiFileDialog/ImGuiFileDialog.h>
 
 #include "MainFrame.h"
 
-#include "Gui/GuiLayout.h"
-#include "Panes/FinalFontPane.h"
-#include "Helper/SelectionHelper.h"
+ //free type
+#include <misc/freetype/imgui_freetype.h>
+
+#include <Gui/GuiLayout.h>
+#include <Panes/FinalFontPane.h>
+#include <Helper/SelectionHelper.h>
+#include <Project/FontInfos.h>
 
 #include <cinttypes> // printf zu
 
@@ -206,6 +210,8 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 
 				if (vProjectFile->m_CurrentFont)
 				{
+					bool needFontReGen = false;
+
 					vProjectFile->m_CurrentFont->DrawInfos();
 
 					if (ImGui::BeginFramedGroup("Pane Mode"))
@@ -227,19 +233,13 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 					{
 						ImGui::PushItemWidth(150.0f);
 
-						bool needFontReGen = false;
-
 						const float aw = ImGui::GetContentRegionAvailWidth();
 
 						needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Size", &vProjectFile->m_CurrentFont->m_FontSize, 7, 50, defaultFontInfosValues.m_FontSize);
-						needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Over Sample", &vProjectFile->m_CurrentFont->m_Oversample, 1, 5, defaultFontInfosValues.m_Oversample);
-
-						if (needFontReGen)
+						
+						if (FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_STB)
 						{
-							vProjectFile->m_CurrentFont->m_FontSize = ct::clamp(vProjectFile->m_CurrentFont->m_FontSize, 7, 50);
-							vProjectFile->m_CurrentFont->m_Oversample = ct::clamp(vProjectFile->m_CurrentFont->m_Oversample, 1, 5);
-							OpenFont(vProjectFile, vProjectFile->m_CurrentFont->m_FontFilePathName, false);
-							vProjectFile->SetProjectChange();
+							needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Over Sample", &vProjectFile->m_CurrentFont->m_Oversample, 1, 5, defaultFontInfosValues.m_Oversample);
 						}
 
 						if (m_FontPaneFlags & SourceFontPaneFlags::SOURCE_FONT_PANE_GLYPH)
@@ -264,6 +264,58 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 						ImGui::PopItemWidth();
 
 						ImGui::EndFramedGroup(true);
+					}
+
+					if (ImGui::BeginFramedGroup("Rasterizer"))
+					{
+						if (ImGui::RadioButtonLabeled("FreeType", "Use FreeType Raterizer", FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE))
+						{
+							needFontReGen = true;
+							FontInfos::rasterizerMode = RasterizerEnum::RASTERIZER_FREETYPE;
+						}
+
+						ImGui::SameLine();
+
+						if (ImGui::RadioButtonLabeled("Stb (Default)", "Use Stb Raterizer", FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_STB))
+						{
+							needFontReGen = true;
+							FontInfos::rasterizerMode = RasterizerEnum::RASTERIZER_STB;
+						}
+
+						ImGui::FramedGroupSeparator();
+						
+						const float aw = ImGui::GetContentRegionAvailWidth();
+
+						needFontReGen |= ImGui::SliderFloatDefaultCompact(aw, "Multiply", &FontInfos::fontsMultiply, 0.0f, 2.0f, 1.0f);
+						
+						if (m_FontPaneFlags & SourceFontPaneFlags::SOURCE_FONT_PANE_TEXTURE)
+						{
+							needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Padding", &FontInfos::fontsPadding, 0, 16, 1);
+						}
+
+						if (FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE)
+						{
+							ImGui::FramedGroupSeparator();
+							
+							needFontReGen |= ImGui::CheckboxFlags("NoHinting", &FontInfos::freeTypeFlag, ImGuiFreeType::NoHinting);
+							needFontReGen |= ImGui::CheckboxFlags("NoAutoHint", &FontInfos::freeTypeFlag, ImGuiFreeType::NoAutoHint);
+							needFontReGen |= ImGui::CheckboxFlags("ForceAutoHint", &FontInfos::freeTypeFlag, ImGuiFreeType::ForceAutoHint);
+							needFontReGen |= ImGui::CheckboxFlags("LightHinting", &FontInfos::freeTypeFlag, ImGuiFreeType::LightHinting);
+							needFontReGen |= ImGui::CheckboxFlags("MonoHinting", &FontInfos::freeTypeFlag, ImGuiFreeType::MonoHinting);
+							needFontReGen |= ImGui::CheckboxFlags("Bold", &FontInfos::freeTypeFlag, ImGuiFreeType::Bold);
+							needFontReGen |= ImGui::CheckboxFlags("Oblique", &FontInfos::freeTypeFlag, ImGuiFreeType::Oblique);
+							needFontReGen |= ImGui::CheckboxFlags("Monochrome", &FontInfos::freeTypeFlag, ImGuiFreeType::Monochrome);
+						}
+
+						ImGui::EndFramedGroup(true);
+					}
+
+					if (needFontReGen)
+					{
+						vProjectFile->m_CurrentFont->m_FontSize = ct::clamp(vProjectFile->m_CurrentFont->m_FontSize, 7, 50);
+						vProjectFile->m_CurrentFont->m_Oversample = ct::clamp(vProjectFile->m_CurrentFont->m_Oversample, 1, 5);
+						OpenFont(vProjectFile, vProjectFile->m_CurrentFont->m_FontFilePathName, false);
+						vProjectFile->SetProjectChange();
 					}
 				}
 			}
