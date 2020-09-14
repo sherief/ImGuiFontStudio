@@ -107,6 +107,8 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 						ImFontConfig* font_config = (ImFontConfig*)&m_ImFontAtlas.ConfigData[n];
 						font_config->RasterizerMultiply = fontsMultiply;
 						font_config->RasterizerFlags = (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE) ? freeTypeFlag : 0x00;
+						font_config->OversampleH = m_Oversample;
+						font_config->OversampleV = m_Oversample;
 					}
 					if (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE)
 						success = ImGuiFreeType::BuildFontAtlas(&m_ImFontAtlas, ImGuiFreeType::LightHinting);

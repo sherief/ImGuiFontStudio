@@ -55,7 +55,7 @@
 			<prefix>IGFS</prefix>
 			<pathfilename>..\samples_Fonts\fontawesome-webfont.ttf</pathfilename>
 			<oversample>2</oversample>
-			<fontsize>50</fontsize>
+			<fontsize>22</fontsize>
 		</font>
 		<font name="materialdesignicons-webfont.ttf">
 			<glyphs>
@@ -67,6 +67,12 @@
 			<oversample>1</oversample>
 			<fontsize>32</fontsize>
 		</font>
+		<font name="seguiemj.ttf">
+			<prefix></prefix>
+			<pathfilename>..\samples_Fonts\seguiemj.ttf</pathfilename>
+			<oversample>1</oversample>
+			<fontsize>29</fontsize>
+		</font>
 		<rangecoloring show="false" hash="42.606;14.789;27.817;0.5"/>
 		<previewcountglyph_x>25</previewcountglyph_x>
 		<mergedfontprefix>IGFS</mergedfontprefix>
@@ -77,6 +83,6 @@
 		<glyphpreviewshowcontrollines>false</glyphpreviewshowcontrollines>
 		<glyphpreviewquadbeziercounsegment>5</glyphpreviewquadbeziercounsegment>
 		<genmode>293</genmode>
-		<fonttomergein>fontawesome-webfont.ttf</fonttomergein>
+		<fonttomergein>seguiemj.ttf</fonttomergein>
 	</project>
 </config>

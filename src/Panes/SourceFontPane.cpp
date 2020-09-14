@@ -236,11 +236,7 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 						const float aw = ImGui::GetContentRegionAvailWidth();
 
 						needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Size", &vProjectFile->m_CurrentFont->m_FontSize, 7, 50, defaultFontInfosValues.m_FontSize);
-						
-						if (FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_STB)
-						{
-							needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Over Sample", &vProjectFile->m_CurrentFont->m_Oversample, 1, 5, defaultFontInfosValues.m_Oversample);
-						}
+						needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Over Sample", &vProjectFile->m_CurrentFont->m_Oversample, 1, 5, defaultFontInfosValues.m_Oversample);
 
 						if (m_FontPaneFlags & SourceFontPaneFlags::SOURCE_FONT_PANE_GLYPH)
 						{
@@ -305,6 +301,7 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 							needFontReGen |= ImGui::CheckboxFlags("Bold", &FontInfos::freeTypeFlag, ImGuiFreeType::Bold);
 							needFontReGen |= ImGui::CheckboxFlags("Oblique", &FontInfos::freeTypeFlag, ImGuiFreeType::Oblique);
 							needFontReGen |= ImGui::CheckboxFlags("Monochrome", &FontInfos::freeTypeFlag, ImGuiFreeType::Monochrome);
+							needFontReGen |= ImGui::CheckboxFlags("LoadColor", &FontInfos::freeTypeFlag, ImGuiFreeType::LoadColor);
 						}
 
 						ImGui::EndFramedGroup(true);
