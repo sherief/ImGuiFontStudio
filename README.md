@@ -1,10 +1,10 @@
-[<img src="https://github.com/aiekick/ImGuiFontStudio/workflows/Win/badge.svg" width="150"/>](https://github.com/aiekick/ImGuiFontStudio/actions?query=workflow%3AWin) [<img src="https://github.com/aiekick/ImGuiFontStudio/workflows/Linux/badge.svg" width="165"/>](https://github.com/aiekick/ImGuiFontStudio/actions?query=workflow%3ALinux) [<img src="https://github.com/aiekick/ImGuiFontStudio/workflows/Osx/badge.svg" width="150"/>](https://github.com/aiekick/ImGuiFontStudio/actions?query=workflow%3AOsx)
-
-https://github.com/aiekick/ImGuiFontStudio
+[<img src="https://github.com/aiekick/ImGuiFontStudio/workflows/Win_FreeType/badge.svg?branch=freetype" width="235"/>](https://github.com/aiekick/ImGuiFontStudio/actions?query=workflow%3AWin_FreeType) 
+[<img src="https://github.com/aiekick/ImGuiFontStudio/workflows/Linux_Freetype/badge.svg?branch=freetype" width="235"/>](https://github.com/aiekick/ImGuiFontStudio/actions?query=workflow%3ALinux_FreeType) 
+[<img src="https://github.com/aiekick/ImGuiFontStudio/workflows/Osx_Freetype/badge.svg?branch=freetype" width="235"/>](https://github.com/aiekick/ImGuiFontStudio/actions?query=workflow%3AOsx_FreeType) 
 
 <img src="https://github.com/aiekick/ImGuiFontStudio/blob/master/doc/src.png" width="500">
 
-# ImGuiFontStudio
+# [ImGuiFontStudio](https://github.com/aiekick/ImGuiFontStudio
 
 ImGuiFontStudio is a tool for Subset font and extract glyph names for use embbeded or not in a software, especially for use with ImGui for embedded way.
 
@@ -141,6 +141,7 @@ ImGuiFontStudio is an open source software under [license apache 2.0](LICENSE)
 * [Dear ImGui - Docking branch - MIT](https://github.com/ocornut/imgui)
 * [Glad - MIT](https://github.com/Dav1dde/glad)
 * [Stb - MIT](https://github.com/nothings/stb)
+* [freetype2 - FREETYPE](https://github.com/freetype/freetype2/tree/master)
 * [tinyxml2 - ZLIB]( https://github.com/leethomason/tinyxml2)
 * [dirent - MIT]( https://github.com/tronkko/dirent)
 * [sfntly - Apache 2.0](https://github.com/rillig/sfntly)
