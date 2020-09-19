@@ -1,12 +1,13 @@
-name: Osx
+name: Osx_Freetype
 
 on:
+  workflow_dispatch:
   push:
     branches:
-    - master
+    - freetype
 
 jobs:
-  build_Osx:
+  build_Osx_Freetype:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
