@@ -1,4 +1,4 @@
-name: Win_FreeType
+name: Win_FreeTypes
 
 on:
   workflow_dispatch:
