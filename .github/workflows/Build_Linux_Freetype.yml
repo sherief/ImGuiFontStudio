@@ -1,12 +1,13 @@
-name: Linux
+name: Linux_Freetype
 
 on:
+  workflow_dispatch:
   push:
     branches:
-    - master
+    - freetype
 
 jobs:
-  build_Linux_Ubuntu:
+  build_Linux_Ubuntu_Freetype:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
