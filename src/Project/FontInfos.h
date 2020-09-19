@@ -23,6 +23,8 @@
 #include <imgui.h>
 #include <string>
 #include <set>
+#include <map>
+#include <unordered_map>
 
 enum RasterizerEnum
 {
@@ -50,15 +52,16 @@ public:
 public: // not to save
 	ImFontAtlas m_ImFontAtlas;
 	std::vector<std::string> m_GlyphNames;
-	std::map<uint32_t, std::string> m_GlyphCodePointToName;
-	std::map<uint32_t, uint32_t> m_GlyphCodePointToGlyphIndex;
+	std::unordered_map<uint32_t, bool> m_GlyphHaveColor; // unordered_map because just for query
+	std::unordered_map<uint32_t, std::string> m_GlyphCodePointToName; // unordered_map because just for query
+	std::unordered_map<uint32_t, uint32_t> m_GlyphCodePointToGlyphIndex; // unordered_map because just for query
 	char m_SearchBuffer[1024] = "\0";
 	ImFontConfig m_FontConfig;
 	bool m_NeedFilePathResolve = false; // the path is not found, need resolve for not lost glyphs datas
 	bool m_NameInDoubleFound = false;
 	bool m_CodePointInDoubleFound = false;
-	std::map<uint32_t, std::vector<GlyphInfos*>> m_GlyphsOrderedByCodePoints;
-	std::map<std::string, std::vector<GlyphInfos*>> m_GlyphsOrderedByGlyphName;
+	std::map<uint32_t, std::vector<GlyphInfos*>> m_GlyphsOrderedByCodePoints; // map because need alpha order
+	std::map<std::string, std::vector<GlyphInfos*>> m_GlyphsOrderedByGlyphName; // map because need alpha order
 	int m_Ascent = 0;
 	int m_Descent = 0;
 	int m_LineGap = 0;
@@ -67,12 +70,12 @@ public: // not to save
 	std::string m_FontFileName;
 	
 public: // to save
-	std::map<uint32_t, GlyphInfos> m_SelectedGlyphs;
+	std::unordered_map<uint32_t, GlyphInfos> m_SelectedGlyphs; // unordered_map because just for query
 	std::string m_FontPrefix; // peut servir pour la generation par lot
 	std::string m_FontFilePathName;
 	int m_Oversample = 1;
 	int m_FontSize = 17;
-	std::set<std::string> m_Filters; // use map just for have binary tree search
+	std::set<std::string> m_Filters;
 	
 public: // callable
 	bool LoadFont(ProjectFile *vProjectFile, const std::string& vFontFilePathName);
@@ -84,6 +87,9 @@ private: // Glyph Names Extraction / DB
 	void FillGlyphNames();
 	void GenerateCodePointToGlypNamesDB();
 	void GetInfos();
+
+private: // glyph color check
+	void CheckIfGlyphHaveColor();
 
 private: // Opengl Texture
 	void CreateFontTexture();

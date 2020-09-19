@@ -183,7 +183,7 @@ bool ImGui::ImageCheckButton(
         ImTextureID user_texture_id, bool *v,
         const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1,
         const ImVec2& vHostTextureSize, int frame_padding,
-        float vRectThickNess, ImVec4 vRectColor)
+        float vRectThickNess, ImVec4 vRectColor, ImVec4 vImgColor)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -230,7 +230,7 @@ bool ImGui::ImageCheckButton(
     ImVec2 glyphSize = ImVec2(imgSize.x, imgSize.x / ratioX) * 0.5f;
     if (newX < imgSize.x) glyphSize = ImVec2(newX, imgSize.y) * 0.5f;
     ImVec2 center = image_bb.GetCenter();
-    window->DrawList->AddImage(user_texture_id, center - glyphSize, center + glyphSize, uv0, uv1, GetColorU32(ImGuiCol_Text));
+    window->DrawList->AddImage(user_texture_id, center - glyphSize, center + glyphSize, uv0, uv1, GetColorU32(vImgColor));
 
     return pressed;
 }

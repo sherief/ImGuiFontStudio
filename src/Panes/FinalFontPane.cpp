@@ -361,14 +361,20 @@ bool FinalFontPane::DrawGlyph(ProjectFile *vProjectFile,
 			vFontInfos, vSize, vGlyph->glyph.Codepoint, &selected, 
 			SelectionContainerEnum::SELECTION_CONTAINER_FINAL);
 
+		const ImVec4 imgColor =
+			vFontInfos->m_GlyphHaveColor[vGlyph->glyph.Codepoint] ?
+			ImVec4(1, 1, 1, 1) :
+			ImGui::GetStyleColorVec4(ImGuiCol_Text);
+
 		res = ImGui::ImageCheckButton(
 			vFontInfos->m_ImFontAtlas.TexID, 
 			&selected, vSize,
 			ImVec2(vGlyph->glyph.U0, vGlyph->glyph.V0),
 			ImVec2(vGlyph->glyph.U1, vGlyph->glyph.V1),
-			ImVec2((float)vFontInfos->m_ImFontAtlas.TexWidth, 
+			ImVec2(
+				(float)vFontInfos->m_ImFontAtlas.TexWidth, 
 				(float)vFontInfos->m_ImFontAtlas.TexHeight), 
-			-1, vShowRect ? 3.0f : 0.0f);
+			-1, vShowRect ? 3.0f : 0.0f, ImVec4(1, 0, 0, 1), imgColor);
 		
 		if (res)
 		{

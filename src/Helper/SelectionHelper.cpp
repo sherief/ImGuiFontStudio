@@ -817,6 +817,7 @@ void SelectionHelper::SelectGlyph(ProjectFile *vProjectFile, FontInfos *vFontInf
 					if (res.empty())
 						res = "Symbol Name";
 					vFontInfos->m_SelectedGlyphs[vGlyph.Codepoint] = GlyphInfos(vGlyph, res, res);
+					vFontInfos->m_SelectedGlyphs[vGlyph.Codepoint].haveColor = vFontInfos->m_GlyphHaveColor[vGlyph.Codepoint];
 					vProjectFile->SetProjectChange();
 					
 					if (vUpdateMaps)

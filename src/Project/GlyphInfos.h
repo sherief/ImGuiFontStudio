@@ -59,6 +59,7 @@ public:
 	ct::ivec4 m_FontBoundingBox;
 	int m_FontAscent = 0;
 	int m_FontDescent = 0;
+	bool haveColor = false; // COLR Glyphs
 
 public: // for interaction only
 	bool m_editingName = false;

@@ -125,37 +125,40 @@ bool GlyphPane::LoadGlyph(ProjectFile *vProjectFile, FontInfos* vFontInfos, Glyp
 			if (m_fontInstance.m_Font)
 			{
 				sfntly::Ptr<sfntly::CMapTable> cmap_table = down_cast<sfntly::CMapTable*>(m_fontInstance.m_Font->GetTable(sfntly::Tag::cmap));
-				m_fontInstance.m_CMapTable.Attach(cmap_table->GetCMap(sfntly::CMapTable::WINDOWS_BMP));
-				if (m_fontInstance.m_CMapTable)
+				if (cmap_table)
 				{
-					m_fontInstance.m_GlyfTable = down_cast<sfntly::GlyphTable*>(m_fontInstance.m_Font->GetTable(sfntly::Tag::glyf));
-					m_fontInstance.m_LocaTable = down_cast<sfntly::LocaTable*>(m_fontInstance.m_Font->GetTable(sfntly::Tag::loca));
-
-					if (m_fontInstance.m_GlyfTable && m_fontInstance.m_LocaTable)
+					m_fontInstance.m_CMapTable.Attach(cmap_table->GetCMap(sfntly::CMapTable::WINDOWS_BMP));
+					if (m_fontInstance.m_CMapTable)
 					{
-						uint32_t codePoint = vGlyphInfos->glyph.Codepoint;
-                        uint32_t glyphId = m_fontInstance.m_CMapTable->GlyphId(codePoint);
-                        uint32_t length = m_fontInstance.m_LocaTable->GlyphLength(glyphId);
-                        uint32_t offset = m_fontInstance.m_LocaTable->GlyphOffset(glyphId);
+						m_fontInstance.m_GlyfTable = down_cast<sfntly::GlyphTable*>(m_fontInstance.m_Font->GetTable(sfntly::Tag::glyf));
+						m_fontInstance.m_LocaTable = down_cast<sfntly::LocaTable*>(m_fontInstance.m_Font->GetTable(sfntly::Tag::loca));
 
-						// Get the GLYF table for the current glyph id.
-						auto g = m_fontInstance.m_GlyfTable->GetGlyph(offset, length);
-						
-						if (g->GlyphType() == sfntly::GlyphType::kSimple)
+						if (m_fontInstance.m_GlyfTable && m_fontInstance.m_LocaTable)
 						{
-							auto glyph = down_cast<sfntly::GlyphTable::SimpleGlyph*>(g);
-							if (glyph)
+							uint32_t codePoint = vGlyphInfos->glyph.Codepoint;
+							uint32_t glyphId = m_fontInstance.m_CMapTable->GlyphId(codePoint);
+							uint32_t length = m_fontInstance.m_LocaTable->GlyphLength(glyphId);
+							uint32_t offset = m_fontInstance.m_LocaTable->GlyphOffset(glyphId);
+
+							// Get the GLYF table for the current glyph id.
+							auto g = m_fontInstance.m_GlyfTable->GetGlyph(offset, length);
+
+							if (g->GlyphType() == sfntly::GlyphType::kSimple)
 							{
-								m_GlyphToDisplay = *vGlyphInfos;
-								m_GlyphToDisplay.simpleGlyph.LoadSimpleGlyph(glyph);
-								limitContour = m_GlyphToDisplay.simpleGlyph.GetCountContours();
+								auto glyph = down_cast<sfntly::GlyphTable::SimpleGlyph*>(g);
+								if (glyph)
+								{
+									m_GlyphToDisplay = *vGlyphInfos;
+									m_GlyphToDisplay.simpleGlyph.LoadSimpleGlyph(glyph);
+									limitContour = m_GlyphToDisplay.simpleGlyph.GetCountContours();
 #ifdef _DEBUG
-								DebugPane::Instance()->SetGlyphToDebug(m_GlyphToDisplay);
+									DebugPane::Instance()->SetGlyphToDebug(m_GlyphToDisplay);
 #endif
-								// show and active the glyph pane
-								GuiLayout::Instance()->ShowAndFocusPane(PaneFlags::PANE_GLYPH);
-								
-								res = true;
+									// show and active the glyph pane
+									GuiLayout::Instance()->ShowAndFocusPane(PaneFlags::PANE_GLYPH);
+
+									res = true;
+								}
 							}
 						}
 					}

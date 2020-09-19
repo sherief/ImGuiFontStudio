@@ -445,10 +445,18 @@ void SourceFontPane::DrawFontAtlas_Virtual(ProjectFile *vProjectFile, FontInfos 
                                                 vFontInfos,	cell_size, glyph.Codepoint, &selected,
                                                 SelectionContainerEnum::SELECTION_CONTAINER_SOURCE);
 
-                                        ImGui::PushID(NEW_ID);
-                                        bool check = ImGui::ImageCheckButton(vFontInfos->m_ImFontAtlas.TexID, &selected, cell_size,
-                                                                             ImVec2(glyph.U0, glyph.V0), ImVec2(glyph.U1, glyph.V1), hostTextureSize);
-                                        ImGui::PopID();
+										bool glyphHaveColor = (vFontInfos->m_GlyphHaveColor.find(glyph.Codepoint) != vFontInfos->m_GlyphHaveColor.end());
+										
+										ImGui::PushID(NEW_ID);
+										const ImVec4 imgColor =
+											vFontInfos->m_GlyphHaveColor[glyph.Codepoint] ?
+											ImVec4(1, 1, 1, 1) :
+											ImGui::GetStyleColorVec4(ImGuiCol_Text);
+										bool check = ImGui::ImageCheckButton(
+											vFontInfos->m_ImFontAtlas.TexID, &selected, cell_size,
+											ImVec2(glyph.U0, glyph.V0), ImVec2(glyph.U1, glyph.V1),
+											hostTextureSize, -1, 0.0f, ImVec4(1, 0, 0, 1), imgColor);
+										ImGui::PopID();
 
                                         if (check)
                                         {
@@ -467,9 +475,10 @@ void SourceFontPane::DrawFontAtlas_Virtual(ProjectFile *vProjectFile, FontInfos 
                                         {
                                             if (ImGui::IsItemHovered())
                                             {
-                                                ImGui::SetTooltip("name : %s\ncodepoint : %i\nadv x : %.2f\nuv0 : (%.3f,%.3f)\nuv1 : (%.3f,%.3f)",
-                                                                  name.c_str(), (int)glyph.Codepoint, glyph.AdvanceX, glyph.U0, glyph.V0, glyph.U1, glyph.V1);
-                                            }
+												ImGui::SetTooltip("name : %s\ncodepoint : %i\nadv x : %.2f\nuv0 : (%.3f,%.3f)\nuv1 : (%.3f,%.3f)\nhave color : %s",
+													name.c_str(), (int)glyph.Codepoint, glyph.AdvanceX, glyph.U0, glyph.V0, glyph.U1, glyph.V1,
+													(vFontInfos->m_GlyphHaveColor[glyph.Codepoint]) ? "true" : "false");
+											}
                                         }
 
                                         lastGlyphCodePoint = glyph.Codepoint;

@@ -104,14 +104,16 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 					m_ImFontAtlas.TexGlyphPadding = fontsPadding;
 					for (int n = 0; n < m_ImFontAtlas.ConfigData.Size; n++)
 					{
+						freeTypeFlag = (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE) ? freeTypeFlag : 0x00;
+
 						ImFontConfig* font_config = (ImFontConfig*)&m_ImFontAtlas.ConfigData[n];
 						font_config->RasterizerMultiply = fontsMultiply;
-						font_config->RasterizerFlags = (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE) ? freeTypeFlag : 0x00;
+						font_config->RasterizerFlags = freeTypeFlag;
 						font_config->OversampleH = m_Oversample;
 						font_config->OversampleV = m_Oversample;
 					}
 					if (rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE)
-						success = ImGuiFreeType::BuildFontAtlas(&m_ImFontAtlas, ImGuiFreeType::LightHinting);
+						success = ImGuiFreeType::BuildFontAtlas(&m_ImFontAtlas, freeTypeFlag);
 					else if (rasterizerMode == RasterizerEnum::RASTERIZER_STB)
 						success = m_ImFontAtlas.Build();
 				}
@@ -130,6 +132,7 @@ bool FontInfos::LoadFont(ProjectFile *vProjectFile, const std::string& vFontFile
 
 						FillGlyphNames();
 						GenerateCodePointToGlypNamesDB();
+						CheckIfGlyphHaveColor();
 						GetInfos();
 
 						// update glyph ptrs
@@ -183,6 +186,7 @@ void FontInfos::Clear()
 	m_GlyphCodePointToName.clear();
 	m_SelectedGlyphs.clear();
 	m_Filters.clear();
+	m_GlyphHaveColor.clear();
 }
 
 static const char *standardMacNames[258] = { ".notdef", ".null", "nonmarkingreturn", "space", "exclam", "quotedbl", "numbersign", "dollar", "percent", "ampersand", "quotesingle", "parenleft", "parenright", "asterisk", "plus", "comma", "hyphen", "period", "slash", "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "colon", "semicolon", "less", "equal", "greater", "question", "at", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "bracketleft", "backslash", "bracketright", "asciicircum", "underscore", "grave", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "braceleft", "bar", "braceright", "asciitilde", "Adieresis", "Aring", "Ccedilla", "Eacute", "Ntilde", "Odieresis", "Udieresis", "aacute", "agrave", "acircumflex", "adieresis", "atilde", "aring", "ccedilla", "eacute", "egrave", "ecircumflex", "edieresis", "iacute", "igrave", "icircumflex", "idieresis", "ntilde", "oacute", "ograve", "ocircumflex", "odieresis", "otilde", "uacute", "ugrave", "ucircumflex", "udieresis", "dagger", "degree", "cent", "sterling", "section", "bullet", "paragraph", "germandbls", "registered", "copyright", "trademark", "acute", "dieresis", "notequal", "AE", "Oslash", "infinity", "plusminus", "lessequal", "greaterequal", "yen", "mu", "partialdiff", "summation", "product", "pi", "integral", "ordfeminine", "ordmasculine", "Omega", "ae", "oslash", "questiondown", "exclamdown", "logicalnot", "radical", "florin", "approxequal", "Delta", "guillemotleft", "guillemotright", "ellipsis", "nonbreakingspace", "Agrave", "Atilde", "Otilde", "OE", "oe", "endash", "emdash", "quotedblleft", "quotedblright", "quoteleft", "quoteright", "divide", "lozenge", "ydieresis", "Ydieresis", "fraction", "currency", "guilsinglleft", "guilsinglright", "fi", "fl", "daggerdbl", "periodcentered", "quotesinglbase", "quotedblbase", "perthousand", "Acircumflex", "Ecircumflex", "Aacute", "Edieresis", "Egrave", "Iacute", "Icircumflex", "Idieresis", "Igrave", "Oacute", "Ocircumflex", "apple", "Ograve", "Uacute", "Ucircumflex", "Ugrave", "dotlessi", "circumflex", "tilde", "macron", "breve", "dotaccent", "ring", "cedilla", "hungarumlaut", "ogonek", "caron", "Lslash", "lslash", "Scaron", "scaron", "Zcaron", "zcaron", "brokenbar", "Eth", "eth", "Yacute", "yacute", "Thorn", "thorn", "minus", "multiply", "onesuperior", "twosuperior", "threesuperior", "onehalf", "onequarter", "threequarters", "franc", "Gbreve", "gbreve", "Idotaccent", "Scedilla", "scedilla", "Cacute", "cacute", "Ccaron", "ccaron", "dcroat" };
@@ -347,6 +351,81 @@ void FontInfos::GenerateCodePointToGlypNamesDB()
 							m_GlyphCodePointToName[glyph.Codepoint] = "";
 						}
 					}
+				}
+			}
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//// COLORED GLYPH ///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+// will parse de COLR table and set a glyph id if for the glyph the color is present
+// will be important for not replace glyph color when display in light theme
+// https://docs.microsoft.com/en-us/typography/opentype/spec/colr
+void FontInfos::CheckIfGlyphHaveColor()
+{
+	m_GlyphHaveColor.clear();
+
+	if (!m_ImFontAtlas.ConfigData.empty() && 
+		(freeTypeFlag & ImGuiFreeType::RasterizerFlags::LoadColor) == ImGuiFreeType::RasterizerFlags::LoadColor)
+	{
+		m_GlyphNames.clear();
+
+		stbtt_fontinfo fontInfo;
+		const int font_offset = stbtt_GetFontOffsetForIndex(
+			(unsigned char*)m_ImFontAtlas.ConfigData[0].FontData,
+			m_ImFontAtlas.ConfigData[0].FontNo);
+		if (!stbtt_InitFont(&fontInfo,
+			(unsigned char*)m_ImFontAtlas.ConfigData[0].FontData, font_offset))
+			return;
+
+		// get table offet and length
+		// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html => Table Directory
+		stbtt_int32 num_tables = ttUSHORT(fontInfo.data + fontInfo.fontstart + 4);
+		stbtt_uint32 tabledir = fontInfo.fontstart + 12;
+		stbtt_uint32 tablePos = 0;
+		stbtt_uint32 tableLen = 0;
+		for (int i = 0; i < num_tables; ++i)
+		{
+			stbtt_uint32 loc = tabledir + 16 * i;
+			if (stbtt_tag(fontInfo.data + loc + 0, "COLR"))
+			{
+				tablePos = ttULONG(fontInfo.data + loc + 8);
+				tableLen = ttULONG(fontInfo.data + loc + 12);
+				break;
+			}
+		}
+		if (!tablePos) return;
+
+		stbtt_uint8 *data = fontInfo.data + tablePos;
+		stbtt_int32 version = ttUSHORT(data);
+
+		stbtt_uint16 numBaseGlyphRecords = ttUSHORT(data + 2);
+		stbtt_uint32 baseGlyphRecordsOffset = ttULONG(data + 4);
+
+		std::map<uint32_t, bool> glyphHaveColor;
+		stbtt_uint32 offset = baseGlyphRecordsOffset;
+		while (offset < tableLen)
+		{
+			stbtt_uint16 gID = ttUSHORT(data + offset);
+			stbtt_uint16 numLayers = ttUSHORT(data + offset + 4);
+
+			glyphHaveColor[gID] = (numLayers > 0);
+
+			offset += 6;
+		}
+
+		if (m_ImFontAtlas.IsBuilt())
+		{
+			ImFont* font = m_ImFontAtlas.Fonts[0];
+			if (font)
+			{
+				for (auto glyph : font->Glyphs)
+				{
+					int glyphIndex = stbtt_FindGlyphIndex(&fontInfo, (uint32_t)glyph.Codepoint);
+					m_GlyphHaveColor[(uint32_t)glyph.Codepoint] = glyphHaveColor[glyphIndex];
 				}
 			}
 		}
