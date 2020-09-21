@@ -117,14 +117,14 @@ int FontAnalyser::locaTableStruct::draw(int vWidgetId)
 			{
 				for (auto & it : offsets)
 				{
-					ImGui::Text("offsets      (2 bytes) : %hu", it);
+					ImGui::Text("offsets	(2 bytes) : %hu", it);
 				}
 			}
 			else if (head->indexToLocFormat == 1) // long format
 			{
 				for (auto & it : offsets)
 				{
-					ImGui::Text("offsets      (4 bytes) : %u", it);
+					ImGui::Text("offsets	(4 bytes) : %u", it);
 				}
 			}
 		}
@@ -219,6 +219,131 @@ void FontAnalyser::maxpTableStruct::parse(MemoryStream *vMem, size_t vOffset, si
 		maxSizeOfInstructions = vMem->ReadUShort();
 		maxComponentElements = vMem->ReadUShort();
 		maxComponentDepth = vMem->ReadUShort();
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+int FontAnalyser::baseGlyphRecordStruct::draw(int vWidgetId)
+{
+	ImGui::PushID(++vWidgetId);
+
+	if (ImGui::TreeNode("Base Glyph Record :"))
+	{
+		ImGui::Text("version            (2 bytes) : %hu", gID);
+		ImGui::Text("firstLayerIndex    (2 bytes) : %hu", firstLayerIndex);
+		ImGui::Text("numLayers          (2 bytes) : %hu", numLayers);
+
+		ImGui::TreePop();
+	}
+
+	ImGui::PopID();
+
+	ImGui::Separator();
+
+	return vWidgetId;
+}
+
+void FontAnalyser::baseGlyphRecordStruct::parse(MemoryStream *vMem, size_t vOffset, size_t vLength)
+{
+	if (vMem)
+	{
+		vMem->SetPos(vOffset);
+
+		gID = vMem->ReadUShort();
+		firstLayerIndex = vMem->ReadUShort();
+		numLayers = vMem->ReadUShort();
+	}
+}
+
+int FontAnalyser::layerRecordStruct::draw(int vWidgetId)
+{
+	ImGui::PushID(++vWidgetId);
+
+	if (ImGui::TreeNode("Layer Record :"))
+	{
+		ImGui::Text("gID                (2 bytes) : %hu", gID);
+		ImGui::Text("paletteIndex       (2 bytes) : %hu", paletteIndex);
+
+		ImGui::TreePop();
+	}
+
+	ImGui::PopID();
+
+	ImGui::Separator();
+
+	return vWidgetId;
+}
+
+void FontAnalyser::layerRecordStruct::parse(MemoryStream *vMem, size_t vOffset, size_t vLength)
+{
+	if (vMem)
+	{
+		vMem->SetPos(vOffset);
+
+		gID = vMem->ReadUShort();
+		paletteIndex = vMem->ReadUShort();
+	}
+}
+
+int FontAnalyser::colrTableStruct::draw(int vWidgetId)
+{
+	ImGui::PushID(++vWidgetId);
+
+	if (ImGui::TreeNode("COLR Table :"))
+	{
+		ImGui::Text("version                (2 bytes) : %hu", version);
+		ImGui::Text("numBaseGlyphRecords    (2 bytes) : %hu", numBaseGlyphRecords);
+		ImGui::Text("baseGlyphRecordsOffset (4 bytes) : %hu", baseGlyphRecordsOffset);
+		ImGui::Text("layerRecordsOffset     (4 bytes) : %hu", layerRecordsOffset);
+		ImGui::Text("numLayerRecords        (2 bytes) : %hu", numLayerRecords);
+
+		for (auto base : baseGlyphRecords)
+		{
+			base.draw(vWidgetId);
+		}
+
+		for (auto layer : layerRecords)
+		{
+			layer.draw(vWidgetId);
+		}
+
+		ImGui::TreePop();
+	}
+
+	ImGui::PopID();
+
+	ImGui::Separator();
+
+	return vWidgetId;
+}
+
+void FontAnalyser::colrTableStruct::parse(MemoryStream *vMem, size_t vOffset, size_t vLength)
+{
+	if (vMem)
+	{
+		vMem->SetPos(vOffset);
+
+		version = vMem->ReadUShort();
+		numBaseGlyphRecords = vMem->ReadUShort();
+		baseGlyphRecordsOffset = vMem->ReadULong();
+		layerRecordsOffset = vMem->ReadULong();
+		numLayerRecords = vMem->ReadUShort();
+
+		for (int i = 0; i < numBaseGlyphRecords; i++)
+		{
+			baseGlyphRecordStruct base;
+			base.parse(vMem, vOffset + baseGlyphRecordsOffset + sizeof(baseGlyphRecordStruct) * i, sizeof(baseGlyphRecordStruct));
+			baseGlyphRecords.push_back(base);
+		}
+
+		for (int i = 0; i < numLayerRecords; i++)
+		{
+			layerRecordStruct layer;
+			layer.parse(vMem, vOffset + layerRecordsOffset + sizeof(layerRecordStruct) * i, sizeof(layerRecordStruct));
+			layerRecords.push_back(layer);
+		}
 	}
 }
 
@@ -978,6 +1103,7 @@ int FontAnalyser::FontAnalyzedStruct::draw(int vWidgetId)
 			else if (it.first == "loca") vWidgetId = loca.draw(vWidgetId);
 			else if (it.first == "post") vWidgetId = post.draw(vWidgetId);
 			else if (it.first == "glyf") vWidgetId = glyf.draw(vWidgetId);
+			else if (it.first == "COLR") vWidgetId = colr.draw(vWidgetId);
 		}
 	}
 
@@ -1019,6 +1145,7 @@ void FontAnalyser::FontAnalyzedStruct::parse(MemoryStream *vMem)
 				PARSE_TABLE("glyf", glyf);
 			}
 		}
+		IF_TABLE("COLR") PARSE_TABLE("COLR", colr);
 		
 #undef PARSE_TABLE
 #undef IF_TABLE

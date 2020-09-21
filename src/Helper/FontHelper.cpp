@@ -310,6 +310,8 @@ sfntly::Font* FontHelper::AssembleFont(bool vUsePostTable)
 			CanWeGo &= Assemble_Hmtx_Hhea_Tables();
 			CanWeGo &= Assemble_Name_Table(); // todo: not made for the moment
 			CanWeGo &= Assemble_Head_Table();
+			CanWeGo &= Assemble_COLR_Table(); // todo colr
+			CanWeGo &= Assemble_CPAL_Table(); // todo cpal
 			if (vUsePostTable)
 				CanWeGo &= Assemble_Post_Table(m_GlyphNames);
 			if (CanWeGo)
@@ -857,6 +859,19 @@ bool FontHelper::Assemble_Name_Table()
 {
 	//todo: la table Meta contient les infos sur les font, comme la license , l'auteur etc..
 	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool FontHelper::Assemble_COLR_Table()
+{
+
+}
+
+bool FontHelper::Assemble_CPAL_Table()
+{
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

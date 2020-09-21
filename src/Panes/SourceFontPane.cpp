@@ -125,19 +125,30 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 			{
 				if (ImGui::BeginFramedGroup("Font File"))
 				{
+					float aw = ImGui::GetContentRegionAvailWidth() - ImGui::GetStyle().FramePadding.x;
+					
+					if (!vProjectFile->m_Fonts.empty())
+						aw = (aw - ImGui::GetStyle().FramePadding.x * 2.0f) * 0.5f;
+
+					ImGui::PushItemWidth(aw);
 					if (ImGui::Button(ICON_IGFS_FOLDER_OPEN " Open Font"))
 					{
 						igfd::ImGuiFileDialog::Instance()->OpenModal("OpenFontDlg", "Open Font File", "Font File (*.ttf *.otf){.ttf,.otf}", ".", 0);
 					}
+					ImGui::PopItemWidth();
 
 					if (!vProjectFile->m_Fonts.empty())
 					{
 						ImGui::SameLine();
 
+						ImGui::PushItemWidth(aw);
 						if (ImGui::Button(ICON_IGFS_DESTROY " Close Font"))
 						{
 							CloseCurrentFont(vProjectFile);
 						}
+						ImGui::PopItemWidth();
+
+						ImGui::FramedGroupSeparator();
 
 						ImGui::Text("Opened Fonts :");
 
@@ -216,15 +227,17 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 
 					if (ImGui::BeginFramedGroup("Pane Mode"))
 					{
+						float aw = ImGui::GetContentRegionAvail().x - ImGui::GetStyle().FramePadding.x * 3.0f;
+
 						ImGui::RadioButtonLabeled_BitWize<SourceFontPaneFlags>(
 							ICON_IGFS_GLYPHS " Glyphs", "Show Font Glyphs", 
-							&m_FontPaneFlags, SourceFontPaneFlags::SOURCE_FONT_PANE_GLYPH, 0.0f, true);
+							&m_FontPaneFlags, SourceFontPaneFlags::SOURCE_FONT_PANE_GLYPH, aw * 0.5f, true);
 						
 						ImGui::SameLine();
 
 						ImGui::RadioButtonLabeled_BitWize<SourceFontPaneFlags>(
 							ICON_IGFS_TEXTURE " Texture", "Show Font Texture", 
-							&m_FontPaneFlags, SourceFontPaneFlags::SOURCE_FONT_PANE_TEXTURE, 0.0f, true);
+							&m_FontPaneFlags, SourceFontPaneFlags::SOURCE_FONT_PANE_TEXTURE, aw * 0.5f, true);
 						
 						ImGui::EndFramedGroup(true);
 					}
@@ -264,33 +277,40 @@ int SourceFontPane::DrawParamsPane(ProjectFile *vProjectFile, int vWidgetId)
 
 					if (ImGui::BeginFramedGroup("Rasterizer"))
 					{
-						if (ImGui::RadioButtonLabeled("FreeType", "Use FreeType Raterizer", FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE))
-						{
-							needFontReGen = true;
-							FontInfos::rasterizerMode = RasterizerEnum::RASTERIZER_FREETYPE;
-						}
-
-						ImGui::SameLine();
-
+						const float aww = ImGui::GetContentRegionAvailWidth() - ImGui::GetStyle().FramePadding.x * 3.0f;
+						
+						ImGui::PushItemWidth(aww * 0.5f);
 						if (ImGui::RadioButtonLabeled("Stb (Default)", "Use Stb Raterizer", FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_STB))
 						{
 							needFontReGen = true;
 							FontInfos::rasterizerMode = RasterizerEnum::RASTERIZER_STB;
 						}
+						ImGui::PopItemWidth();
+
+						ImGui::SameLine();
+						
+						ImGui::PushItemWidth(aww * 0.5f);
+						if (ImGui::RadioButtonLabeled("FreeType", "Use FreeType Raterizer", FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE))
+						{
+							needFontReGen = true;
+							FontInfos::rasterizerMode = RasterizerEnum::RASTERIZER_FREETYPE;
+						}
+						ImGui::PopItemWidth();
 
 						ImGui::FramedGroupSeparator();
 						
 						const float aw = ImGui::GetContentRegionAvailWidth();
 
-						needFontReGen |= ImGui::SliderFloatDefaultCompact(aw, "Multiply", &FontInfos::fontsMultiply, 0.0f, 2.0f, 1.0f);
+						needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Padding", &FontInfos::fontsPadding, 0, 16, 1);
 						
-						if (m_FontPaneFlags & SourceFontPaneFlags::SOURCE_FONT_PANE_TEXTURE)
-						{
-							needFontReGen |= ImGui::SliderIntDefaultCompact(aw, "Padding", &FontInfos::fontsPadding, 0, 16, 1);
-						}
-
 						if (FontInfos::rasterizerMode == RasterizerEnum::RASTERIZER_FREETYPE)
 						{
+							ImGui::FramedGroupSeparator();
+
+							const float aw = ImGui::GetContentRegionAvailWidth();
+
+							needFontReGen |= ImGui::SliderFloatDefaultCompact(aw, "Multiply", &FontInfos::fontsMultiply, 0.0f, 2.0f, 1.0f);
+
 							ImGui::FramedGroupSeparator();
 							
 							needFontReGen |= ImGui::CheckboxFlags("NoHinting", &FontInfos::freeTypeFlag, ImGuiFreeType::NoHinting);

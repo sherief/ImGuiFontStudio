@@ -235,6 +235,49 @@ namespace FontAnalyser
 
 	//////////////////////////////////////
 
+	class baseGlyphRecordStruct
+	{
+	public:
+		uint16_t gID;
+		uint16_t firstLayerIndex;
+		uint16_t numLayers;
+
+	public:
+		int draw(int vWidgetId);
+		void parse(MemoryStream *vMem, size_t vOffset, size_t vLength);
+	};
+
+	class layerRecordStruct
+	{
+	public:
+		uint16_t gID;
+		uint16_t paletteIndex;
+
+	public:
+		int draw(int vWidgetId);
+		void parse(MemoryStream *vMem, size_t vOffset, size_t vLength);
+	};
+
+	class colrTableStruct
+	{
+	public:
+		uint16_t version;
+		uint16_t numBaseGlyphRecords;
+		uint32_t baseGlyphRecordsOffset;
+		uint32_t layerRecordsOffset;
+		uint16_t numLayerRecords;
+
+	public:
+		std::vector<baseGlyphRecordStruct> baseGlyphRecords;
+		std::vector<layerRecordStruct> layerRecords;
+
+	public:
+		int draw(int vWidgetId);
+		void parse(MemoryStream *vMem, size_t vOffset, size_t vLength);
+	};
+
+	//////////////////////////////////////
+
 	class simpleGlyphTableStruct
 	{
 	public: 
@@ -295,6 +338,7 @@ namespace FontAnalyser
 		cmapTableStruct cmap;
 		locaTableStruct loca;
 		glyfTableStruct glyf;
+		colrTableStruct colr;
 
 	public:
 		int draw(int vWidgetId);

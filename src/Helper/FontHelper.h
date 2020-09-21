@@ -133,6 +133,10 @@ private:
 private:
 	bool Assemble_Name_Table(); // Copyright
 
+private: // Color Glyphs
+	bool Assemble_COLR_Table();
+	bool Assemble_CPAL_Table();
+
 private:
 	bool Assemble_Head_Table();
 
