@@ -866,12 +866,12 @@ bool FontHelper::Assemble_Name_Table()
 
 bool FontHelper::Assemble_COLR_Table()
 {
-
+	return true;
 }
 
 bool FontHelper::Assemble_CPAL_Table()
 {
-
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
